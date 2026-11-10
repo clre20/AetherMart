@@ -88,6 +88,13 @@ records:
   # 資料庫交易紀錄（介面查詢用）保留天數
   retention-days: 30
 
+# 基岩版（Geyser／Floodgate）玩家
+bedrock:
+  # true：所有 AetherMart 介面對基岩版玩家都用同一個標題（messages.yml 的 gui.bedrock-title），
+  # 同樣大小的頁面切換時 Geyser 會沿用同一個箱子，畫面不會閃一下；Java 版玩家照常顯示各頁標題。
+  # false：基岩版也顯示各頁標題，但每次換頁畫面會關掉再打開。
+  fixed-title: true
+
 sounds:
   enabled: true
 

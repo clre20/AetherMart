@@ -7,7 +7,7 @@ api-version: '1.21'
 load: POSTWORLD
 authors: [ Clre20 ]
 website: https://github.com/clre20/AetherMart
-softdepend: [ Vault, ExcellentEconomy, DiscordLink ]
+softdepend: [ Vault, ExcellentEconomy, DiscordLink, floodgate, Geyser-Spigot ]
 
 commands:
   aethermart:

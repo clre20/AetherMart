@@ -27,6 +27,7 @@ public final class MainConfig {
     public final Map<String, CurrencyDef> currencies = new LinkedHashMap<>();
     public int chatTimeout;
     public String cancelWord;
+    public boolean bedrockFixedTitle;
 
     public String token;
     public String adminChannel;
@@ -101,6 +102,7 @@ public final class MainConfig {
 
         chatTimeout = clamp(c.getInt("chat-input.timeout", 60), 10, 600);
         cancelWord = c.getString("chat-input.cancel-word", "取消");
+        bedrockFixedTitle = c.getBoolean("bedrock.fixed-title", true);
 
         token = c.getString("discord.token", "").trim();
         adminChannel = c.getString("discord.admin.channel-id", "").trim();

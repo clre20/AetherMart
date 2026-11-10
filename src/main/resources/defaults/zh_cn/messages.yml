@@ -254,6 +254,8 @@ update:
   console-failed: "检查更新失败：{error}"
 
 gui:
+  # 基岩版玩家所有界面共用的标题（config.yml bedrock.fixed-title）
+  bedrock-title: "&8AetherMart"
   common:
     blocked:
       name: "&c无法提交"

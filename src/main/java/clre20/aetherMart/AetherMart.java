@@ -196,6 +196,7 @@ public final class AetherMart extends JavaPlugin {
     /** /mart reload：重新讀取並補齊所有設定檔。 */
     public void reload() {
         loadConfigs();
+        clre20.aetherMart.util.Bedrock.reset();
         activity.configure(config.zone, config.logMaxFileBytes, config.logRetentionDays, config.logMaxTotalBytes);
         currencies.load(config);
         if (!config.language.equals(loadedLanguage)) {

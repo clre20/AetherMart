@@ -72,6 +72,7 @@ public final class PlayerListener implements Listener {
         plugin.players().unload(id);
         plugin.claims().unload(id);
         plugin.links().onQuit(id);
+        clre20.aetherMart.util.Bedrock.forget(id);
     }
 
     @EventHandler

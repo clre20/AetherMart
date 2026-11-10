@@ -254,6 +254,8 @@ update:
   console-failed: "Update check failed: {error}"
 
 gui:
+  # Shared title for Bedrock players (config.yml bedrock.fixed-title)
+  bedrock-title: "&8AetherMart"
   common:
     blocked:
       name: "&cCan't submit yet"

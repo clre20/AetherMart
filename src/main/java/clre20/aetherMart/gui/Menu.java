@@ -71,10 +71,21 @@ public abstract class Menu implements InventoryHolder {
     }
 
     public void open() {
-        inventory = Bukkit.createInventory(this, rows() * 9, plugin.messages().get(titleKey(), titleVars()));
+        inventory = Bukkit.createInventory(this, rows() * 9, title());
         build();
         suspended = false;
         viewer.openInventory(inventory);
+    }
+
+    /**
+     * 介面標題。基岩版玩家（config.yml bedrock.fixed-title）一律用同一個標題：
+     * Geyser 只有在「標題、大小相同」時才會沿用已開著的箱子，否則每換一頁都要關掉再開（畫面會閃一下）。
+     */
+    private net.kyori.adventure.text.Component title() {
+        if (plugin.config().bedrockFixedTitle && clre20.aetherMart.util.Bedrock.is(viewer)) {
+            return plugin.messages().get("gui.bedrock-title", Map.of());
+        }
+        return plugin.messages().get(titleKey(), titleVars());
     }
 
     /** 重畫內容（不重新開啟）。 */
