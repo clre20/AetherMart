@@ -310,6 +310,11 @@ public final class ShopService {
 
     /** 購買；成功或失敗都會送出訊息。回傳是否成功。 */
     public boolean buy(Player player, ShopModel.Product p, int portions) {
+        return buy(player, p, portions, null);
+    }
+
+    /** 購買；成功時把結果畫面用的明細放進 out（item、amount、paid、tax、balance、overflow）。 */
+    public boolean buy(Player player, ShopModel.Product p, int portions, Map<String, String> out) {
         if (portions <= 0 || portions > 2304) {
             return false;
         }
@@ -364,6 +369,14 @@ public final class ShopService {
         plugin.sounds().success(player);
         BigDecimal balance = c.provider().balance(player);
         plugin.receipts().shopPurchase(player, p, q, c, balance, receiptNo, now);
+        if (out != null) {
+            out.put("item", p.displayName);
+            out.put("amount", String.valueOf(q.items()));
+            out.put("paid", c.format(q.total()));
+            out.put("tax", c.format(q.tax()));
+            out.put("balance", c.format(c.round(balance)));
+            out.put("overflow", String.valueOf(!overflow.isEmpty()));
+        }
         return true;
     }
 }

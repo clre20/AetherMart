@@ -376,6 +376,11 @@ public final class AuctionService {
 
     /** 驗證並建立拍賣；成功時清空草稿物品並回傳 true。 */
     public boolean create(Player p, Draft d) {
+        return create(p, d, null);
+    }
+
+    /** 建立拍賣；成功時把結果畫面用的明細放進 out（id、mode、price、ends）。 */
+    public boolean create(Player p, Draft d, Map<String, String> out) {
         if (!p.hasPermission("aethermart.auction.sell")) {
             plugin.messages().send(p, "common.no-permission");
             return false;
@@ -472,6 +477,12 @@ public final class AuctionService {
         plugin.messages().send(p, "auction.create.done", Vars.of("id", a.id, "price", c.format(a.price)));
         plugin.sounds().success(p);
         plugin.receipts().auctionListed(a);
+        if (out != null) {
+            out.put("id", String.valueOf(a.id));
+            out.put("mode", plugin.messages().plain(a.mode == Auction.Mode.FIXED ? "auction.mode.fixed" : "auction.mode.bid", Map.of()));
+            out.put("price", c.format(a.price));
+            out.put("ends", TimeUtil.format(a.endsAt, plugin.config().zone, TimeUtil.DATE_TIME_SHORT));
+        }
         return true;
     }
 
@@ -493,6 +504,11 @@ public final class AuctionService {
     // ---------------- 一口價購買 ----------------
 
     public boolean buy(Player p, Auction a) {
+        return buy(p, a, null);
+    }
+
+    /** 一口價購買；成功時把明細放進 out（id、seller、paid、tax、balance）。 */
+    public boolean buy(Player p, Auction a, Map<String, String> out) {
         if (!p.hasPermission("aethermart.use")) {
             plugin.messages().send(p, "common.no-permission");
             return false;
@@ -526,12 +542,24 @@ public final class AuctionService {
         BigDecimal balance = c.provider().balance(p);
         completeSale(a, p.getUniqueId(), p.getName(), a.price, tax, false, balance);
         plugin.sounds().success(p);
+        if (out != null) {
+            out.put("id", String.valueOf(a.id));
+            out.put("seller", a.sellerName);
+            out.put("paid", c.format(total));
+            out.put("tax", c.format(tax));
+            out.put("balance", c.format(c.round(balance)));
+        }
         return true;
     }
 
     // ---------------- 出價 ----------------
 
     public boolean bid(Player p, Auction a, BigDecimal amount) {
+        return bid(p, a, amount, null);
+    }
+
+    /** 出價；成功時把明細放進 out（id、price、need）。 */
+    public boolean bid(Player p, Auction a, BigDecimal amount, Map<String, String> out) {
         if (!p.hasPermission("aethermart.use")) {
             plugin.messages().send(p, "common.no-permission");
             return false;
@@ -597,6 +625,11 @@ public final class AuctionService {
         plugin.activity().log("TRADE", "BID #" + a.id + " " + p.getName() + " (" + p.getUniqueId() + ") " + c.format(amount));
         plugin.messages().send(p, "auction.bid.done", Vars.of("id", a.id, "price", c.format(amount)));
         plugin.sounds().success(p);
+        if (out != null) {
+            out.put("id", String.valueOf(a.id));
+            out.put("price", c.format(amount));
+            out.put("need", c.format(need));
+        }
         if (prev != null && !prev.bidder().equals(p.getUniqueId())) {
             Player old = Bukkit.getPlayer(prev.bidder());
             if (old != null) {

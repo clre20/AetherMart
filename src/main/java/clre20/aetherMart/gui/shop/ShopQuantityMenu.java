@@ -87,10 +87,17 @@ public final class ShopQuantityMenu extends Menu {
         }));
         set(22, plugin.icons().of(Material.OAK_DOOR, "gui.common.back"), e -> new ShopProductsMenu(plugin, viewer, p.categoryId, 0).open());
         set(26, plugin.icons().confirm(Material.EMERALD_BLOCK, "gui.shop.quantity.confirm", vars, plugin.shop().buyBlockers(viewer, p, portions)), e -> {
-            if (!plugin.shop().buy(viewer, p, portions)) {
+            Map<String, String> out = new java.util.HashMap<>();
+            if (!plugin.shop().buy(viewer, p, portions, out)) {
                 plugin.sounds().fail(viewer);
+                refresh();
+                return;
             }
-            refresh();
+            ItemStack shown = p.item.clone();
+            shown.setAmount(Math.max(1, Math.min(shown.getMaxStackSize(), Integer.parseInt(out.get("amount")))));
+            boolean overflow = Boolean.parseBoolean(out.get("overflow"));
+            out.put("note", plain(overflow ? "gui.result.shop.note-claims" : "gui.result.shop.note-inventory", Map.of()));
+            new clre20.aetherMart.gui.ResultMenu(plugin, viewer, "shop", out, shown, this::open, overflow).open();
         });
     }
 }

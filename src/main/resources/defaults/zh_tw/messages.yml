@@ -269,6 +269,39 @@ gui:
     loading:
       name: "&7載入中…"
 
+  result:
+    title: "&8交易結果"
+    claims:
+      name: "&d前往領取箱"
+      lore: ["&7待領取：{count} 筆"]
+    hub:
+      name: "&f回主選單"
+    shop:
+      note-inventory: "物品已放入背包"
+      note-claims: "背包放不下的部分已放入領取箱"
+      status:
+        name: "&a購買成功"
+        lore: ["&7{item} ×{amount}", "&7支付：&e{paid} &7（含稅 {tax}）", "&7餘額：&f{balance}", "", "&a{note}"]
+      back:
+        name: "&e繼續購買"
+    auction-buy:
+      status:
+        name: "&a購買成功"
+        lore: ["&7拍賣 #A-{id}（賣家 {seller}）", "&7支付：&e{paid} &7（含稅 {tax}）", "&7餘額：&f{balance}", "", "&d物品已放入領取箱"]
+      back:
+        name: "&e返回拍賣場"
+    bid:
+      status:
+        name: "&6出價成功"
+        lore: ["&7拍賣 #A-{id}", "&7你的出價：&e{price}", "&7你目前是最高出價者", "", "&8現在不會扣款，落槌成交時才扣 {need}（含稅）"]
+      back:
+        name: "&e返回這筆拍賣"
+    listed:
+      status:
+        name: "&a上架成功"
+        lore: ["&7拍賣 #A-{id}（{mode}）", "&7價格：&e{price}", "&7結束時間：{ends}", "", "&8可在「我的上架」查看或下架"]
+      back:
+        name: "&e返回玩家拍賣"
   hub:
     title: "&8AetherMart"
     shop:

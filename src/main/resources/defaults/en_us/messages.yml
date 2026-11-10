@@ -269,6 +269,39 @@ gui:
     loading:
       name: "&7Loading…"
 
+  result:
+    title: "&8Trade result"
+    claims:
+      name: "&dOpen claim box"
+      lore: ["&7Waiting: {count}"]
+    hub:
+      name: "&fMain menu"
+    shop:
+      note-inventory: "The items are in your inventory"
+      note-claims: "What didn't fit went to your claim box"
+      status:
+        name: "&aPurchase complete"
+        lore: ["&7{item} ×{amount}", "&7Paid: &e{paid} &7(tax {tax})", "&7Balance: &f{balance}", "", "&a{note}"]
+      back:
+        name: "&eKeep shopping"
+    auction-buy:
+      status:
+        name: "&aPurchase complete"
+        lore: ["&7Auction #A-{id} (seller {seller})", "&7Paid: &e{paid} &7(tax {tax})", "&7Balance: &f{balance}", "", "&dThe items are in your claim box"]
+      back:
+        name: "&eBack to the market"
+    bid:
+      status:
+        name: "&6Bid placed"
+        lore: ["&7Auction #A-{id}", "&7Your bid: &e{price}", "&7You are the highest bidder", "", "&8Nothing is charged now; {need} (with tax) is taken when the hammer falls"]
+      back:
+        name: "&eBack to this auction"
+    listed:
+      status:
+        name: "&aListed"
+        lore: ["&7Auction #A-{id} ({mode})", "&7Price: &e{price}", "&7Ends: {ends}", "", "&8See or remove it in My listings"]
+      back:
+        name: "&eBack to player auctions"
   hub:
     title: "&8AetherMart"
     shop:

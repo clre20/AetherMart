@@ -32,6 +32,7 @@ AetherMart 是一個 Paper 伺服器用的綜合商店插件：系統商店與�
   - 左下角依類型蓋上不同顏色的印章；所有文字、伺服器名稱、顏色、字型都在 `pdf.yml` 設定。
   - 每日彙整 PDF 本機保存 90 天（可設定），過期自動刪除。
 - **送出按鈕會說明原因**：建立拍賣、購買、商品設定、新增促銷的確認按鈕只有能送出時才是綠色；不能送出時變紅色，並列出原因（例如尚未綁定 Discord、餘額不足、還沒設定價格）。
+- **交易結果畫面**：購買、出價、上架成功後切到結果畫面，顯示支付金額、餘額、物品去向，不用在聊天室找訊息。
 - **全方位紀錄**：所有交易、管理操作、Discord 傳送結果都寫入 `logs/` 下的 .log，依天數或大小自動壓縮，並依保留天數與總大小清理。
 - **多語言**：`config.yml` 的 `language` 可選 `zh_tw`、`zh_cn`、`en_us`；換語言後重載，舊的 `messages.yml`、`pdf.yml` 會自動備份並以新語言重建。
 - **設定檔自動補齊**：啟動與重載時自動補上缺少的項目，保留你原本的值與註解；改版時，你沒改過的訊息會自動換成新版文字。
@@ -64,7 +65,7 @@ AetherMart 是一個 Paper 伺服器用的綜合商店插件：系統商店與�
 # 需求：Paper 1.21.x ～ 26.x、Java 21+、Vault 與一個經濟插件（缺少時後台會說明缺什麼）
 # 選用：ExcellentEconomy（特殊幣）、DiscordLink（Discord 綁定）
 plugins/
-├── AetherMart-1.2.0.jar
+├── AetherMart-1.2.1.jar
 ├── Vault.jar
 └── TheosisEconomy.jar
 ```
@@ -167,6 +168,7 @@ Players only need `/mart`; everything else happens in the menus. Bedrock players
   - A coloured stamp per receipt type. Every text, the server name, colours and fonts are set in `pdf.yml`.
   - Daily summary PDFs are kept locally for 90 days (configurable).
 - **Submit buttons explain themselves**: the confirm buttons for listing, buying, product settings and promotions are green only when the action can go through; otherwise they turn red and list the reasons (Discord not linked, not enough money, no price set, and so on).
+- **Result screen**: after a purchase, bid or listing goes through, a result screen shows what was paid, your balance and where the items went, so nothing gets lost in chat.
 - **Full activity log** in `logs/`, compressed by day or size, with retention and size limits.
 - **Languages**: `zh_tw`, `zh_cn`, `en_us`. After switching and reloading, the old `messages.yml` and `pdf.yml` are backed up and rebuilt in the new language.
 - **Config auto-fill**: missing keys are added on start and reload; your values and comments are kept. On upgrades, messages you never edited are replaced with the new wording.
@@ -199,7 +201,7 @@ Players only need `/mart`; everything else happens in the menus. Bedrock players
 # Requires Paper 1.21.x to 26.x, Java 21+, Vault and an economy plugin
 # Optional: ExcellentEconomy (special currency), DiscordLink (Discord links)
 plugins/
-├── AetherMart-1.2.0.jar
+├── AetherMart-1.2.1.jar
 ├── Vault.jar
 └── TheosisEconomy.jar
 ```

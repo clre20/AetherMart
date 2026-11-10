@@ -218,10 +218,19 @@ public final class AuctionCreateMenu extends Menu {
             plugin.messages().send(viewer, "auction.create.cursor");
             return;
         }
+        ItemStack first = null;
+        for (int i = 0; i < 27 && first == null; i++) {
+            ItemStack it = inv().getItem(i);
+            if (it != null && !it.getType().isAir()) {
+                first = it.clone();
+            }
+        }
         stash();
-        if (plugin.auctions().create(viewer, draft)) {
+        Map<String, String> out = new java.util.HashMap<>();
+        if (plugin.auctions().create(viewer, draft, out)) {
             finished = true;
-            viewer.closeInventory();
+            new clre20.aetherMart.gui.ResultMenu(plugin, viewer, "listed", out, first,
+                    () -> new AuctionHomeMenu(plugin, viewer).open(), false).open();
             return;
         }
         plugin.sounds().fail(viewer);

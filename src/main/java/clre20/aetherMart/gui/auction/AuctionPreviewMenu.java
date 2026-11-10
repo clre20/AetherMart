@@ -134,8 +134,10 @@ public final class AuctionPreviewMenu extends Menu implements Tickable {
                         "taxamount", c == null ? "" : c.format(tax));
                 ItemStack info = AuctionIcons.icon(plugin, a, viewer, null);
                 new ConfirmMenu(plugin, viewer, "gui.auction.confirm-buy", cv, info, () -> {
-                    if (plugin.auctions().buy(viewer, a)) {
-                        new AuctionBrowserMenu(plugin, viewer).open();
+                    Map<String, String> out = new java.util.HashMap<>();
+                    if (plugin.auctions().buy(viewer, a, out)) {
+                        new clre20.aetherMart.gui.ResultMenu(plugin, viewer, "auction-buy", out, info,
+                                () -> new AuctionBrowserMenu(plugin, viewer).open(), true).open();
                     } else {
                         plugin.sounds().fail(viewer);
                         reopen();
@@ -156,10 +158,17 @@ public final class AuctionPreviewMenu extends Menu implements Tickable {
                     if (amount == null) {
                         plugin.messages().send(viewer, "common.bad-amount", Vars.of("decimals", c.decimals()));
                         plugin.sounds().fail(viewer);
-                    } else if (!plugin.auctions().bid(viewer, a, amount)) {
-                        plugin.sounds().fail(viewer);
+                        reopen();
+                        return;
                     }
-                    reopen();
+                    Map<String, String> out = new java.util.HashMap<>();
+                    if (!plugin.auctions().bid(viewer, a, amount, out)) {
+                        plugin.sounds().fail(viewer);
+                        reopen();
+                        return;
+                    }
+                    new clre20.aetherMart.gui.ResultMenu(plugin, viewer, "bid", out, AuctionIcons.icon(plugin, a, viewer, null),
+                            this::reopen, false).open();
                 });
             });
         }
