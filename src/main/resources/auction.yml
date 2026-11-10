@@ -1,0 +1,40 @@
+# AetherMart 拍賣設定
+auction-version: 1
+
+# 拍賣可以用的幣別（config.yml 的幣別 ID）
+allowed-currencies: [money, special]
+
+# 成交稅（%），由買家在售價之外另付，賣家實收原價；鍵是幣別 ID
+tax:
+  money: 5
+  special: 5
+
+# 最低售價（一口價與底價）；鍵是幣別 ID
+min-price:
+  money: 1
+  special: 1
+
+# 拍賣時間範圍（一口價與競標共用）；格式 30m、12h、2d、1d12h
+duration:
+  min: 1h
+  max: 7d
+  default: 2d
+
+# 每人同時上架數量；可用權限 aethermart.limit.<數字> 加碼
+default-listing-limit: 3
+
+bidding:
+  # 每次加價至少加目前價格的幾 %
+  min-raise-percent: 5
+  knock:
+    # 結束時間到後，每幾分鐘敲一槌
+    interval-minutes: 5
+    # 第幾槌成交
+    count: 3
+
+# 得標者付不出錢的懲罰
+penalty:
+  # 禁止在 AetherMart 買賣的天數；0 = 不禁止
+  ban-days: 7
+  # 罰金 = 得標價的幾 %（系統回收）；不夠扣的部分記為欠款；0 = 不罰款
+  fine-percent: 10

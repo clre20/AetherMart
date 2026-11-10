@@ -1,0 +1,190 @@
+# AetherMart PDF settings
+# Every text printed on the PDFs lives here; missing keys are added automatically on start and /mart reload
+pdf-version: 1
+# Language of this file; when config.yml changes language, this file is backed up and rebuilt
+language: en_us
+
+# Header
+server-name: "My Server"
+subtitle: "AetherMart Trading System"
+
+# Fonts: leave empty = bundled Noto Sans TC / SC (Traditional Chinese, Simplified Chinese and English all display)
+# To use another font, put the TTF in plugins/AetherMart/fonts/ and enter the file name (.ttf only)
+font:
+  regular: ""
+  bold: ""
+
+colors:
+  theme: "#1F5F6B"        # header band, headings
+  stamp:
+    done: "#C0392B"       # completed (vermilion)
+    listed: "#1D4ED8"     # on auction (blue)
+    outbid: "#7E22CE"     # outbid (purple)
+    expired: "#6B7280"    # expired (grey)
+    removed: "#C2410C"    # removed (orange)
+    penalty: "#991B1B"    # default (dark red)
+    summary: "#1F5F6B"    # combined / settled (teal)
+
+text:
+  generated: "Generated {time}"
+  footer: "This statement was generated automatically by AetherMart for your records"
+  page: "Page {page} / {pages}"
+  continued: "{title} (continued)"
+  sections:
+    items: "Items"
+    returned-items: "Returned items"
+    auction-items: "Auction items"
+    amount: "Amount"
+    notes: "Notes"
+    summary: "Summary"
+    by-currency: "Totals by currency"
+    overview: "Currency overview"
+    by-type: "By type"
+    top: "Top 10 sales"
+    all: "All trades"
+  columns:
+    index: "#"
+    item: "Item"
+    amount: "Qty"
+    remark: "Enchantments & durability"
+    time: "Time"
+    type: "Type"
+    auction: "Auction"
+    money: "Amount"
+    currency: "Currency"
+    spent: "Spent"
+    received: "Received"
+    net: "Net"
+    count: "Count"
+    buyer: "Buyer"
+    seller: "Seller"
+    goods: "Items"
+  fields:
+    id: "Statement no."
+    time: "Date"
+    type: "Type"
+    auction-id: "Auction no."
+    category: "Category"
+    buyer: "Buyer"
+    seller: "Seller"
+    currency: "Currency"
+    count: "Items"
+    unit: "Unit"
+    listed-at: "Listed"
+    ends-at: "Ends"
+    ended-at: "Ended"
+    won-at: "Won"
+    winner: "Winner"
+    bidder: "Bidder"
+    bids: "Bids"
+    bidders: "Bidders"
+    handler: "Handled by"
+    mode: "Mode"
+    remaining: "Time left"
+    duration: "Duration"
+    player: "Player"
+    period: "Period"
+    records: "Records"
+    reason: "Reason"
+    pages: "Following pages"
+    settled-at: "Settled"
+    timezone: "Time zone"
+    trade-count: "Trades"
+    players: "Players"
+    ban-until: "Banned until"
+  values:
+    system-shop: "System shop"
+    items-count: "{slots} slots, {amount} items"
+    unit-count: "{unit} per unit"
+    bids: "{count} ({people} bidders)"
+    people: "{count}"
+    none: "—"
+    peak: "Peak hours: notices were combined"
+    each-page: "One page per record"
+    records: "{count}"
+    pieces: "{count} pcs"
+  modes:
+    fixed: "Buy now"
+    bid: "Auction"
+  trade-types:
+    shop-buy: "System shop purchase"
+    auction-buy: "Auction purchase (buy now)"
+    auction-won: "Auction won (bidding)"
+    sold-fixed: "Auction sold (buy now)"
+    sold-bid: "Auction sold (bidding)"
+    listed-fixed: "Listed (buy now)"
+    listed-bid: "Listed (bidding)"
+    outbid: "Outbid"
+    expired-fixed: "Expired unsold (buy now)"
+    expired-bid: "Auction ended without sale"
+    expired-unpaid: "Ended (no winner could pay)"
+    cancelled: "Removed by seller"
+    force-removed: "Removed by admin"
+    penalty: "Unpaid winning bid"
+    list: "Listed"
+    bid: "Bid"
+    sale: "Sale (buy now)"
+    sale-bid: "Sale (bidding)"
+    cancel: "Removed"
+    force-remove: "Force removed"
+    expire: "Expired"
+  totals:
+    unit-price: "Unit price ({unit} pcs)"
+    promo: "Promotion (was {original})"
+    quantity: "Quantity"
+    subtotal: "Subtotal"
+    tax: "Tax ({percent}%)"
+    balance-after: "Balance after payment"
+    paid: "Total paid"
+    price: "Price"
+    sale-price: "Sale price"
+    received: "Amount received"
+    expected: "Expected income"
+    buyer-tax: "Tax paid by buyer ({percent}%)"
+    start-price: "Starting price"
+    win-price: "Winning bid"
+    charged: "Charged"
+    your-bid: "Your bid"
+    highest: "Current highest"
+    next-min: "Next minimum bid"
+    deal: "Sale amount"
+    fine: "Fine ({percent}%)"
+    fine-paid: "Fine charged"
+    debt: "Debt"
+    total-sales: "{currency} total sales"
+    total-tax: "{currency} tax"
+    trade-count: "Trades"
+  types:
+    shop-purchase:  { title: "Purchase Receipt",    subtitle: "PURCHASE RECEIPT",     stamp: "PAID",     color: done }
+    auction-buy:    { title: "Purchase Receipt",    subtitle: "PURCHASE RECEIPT",     stamp: "PAID",     color: done }
+    auction-won:    { title: "Winning Bid Receipt", subtitle: "WINNING BID RECEIPT",  stamp: "PAID",     color: done }
+    auction-sold:   { title: "Sales Receipt",       subtitle: "SALES RECEIPT",        stamp: "SOLD",     color: done }
+    auction-listed: { title: "Listing Confirmed",   subtitle: "LISTING CONFIRMATION", stamp: "LISTED",   color: listed }
+    auction-outbid: { title: "Outbid Notice",       subtitle: "OUTBID NOTICE",        stamp: "OUTBID",   color: outbid }
+    auction-expired: { title: "Auction Ended",      subtitle: "AUCTION ENDED",        stamp: "EXPIRED",  color: expired }
+    auction-removed: { title: "Listing Removed",    subtitle: "LISTING REMOVED",      stamp: "REMOVED",  color: removed }
+    penalty:        { title: "Payment Default",     subtitle: "PAYMENT DEFAULT",      stamp: "DEFAULT",  color: penalty }
+    combined:       { title: "Combined Statement",  subtitle: "COMBINED STATEMENT",   stamp: "MERGED",   color: summary }
+    daily:          { title: "Daily Summary",       subtitle: "DAILY SUMMARY",        stamp: "SETTLED",  color: summary }
+  notes:
+    claim-box: "Items were placed in your claim box: /mart → Auction → Claim box."
+    to-inventory: "Items were put straight into your inventory."
+    paid-from: "Payment was taken from your {currency} account."
+    paid-on-win: "The winning bid and tax were taken from your {currency} account when the hammer fell."
+    deposited: "Payment went straight into your {currency} account; the buyer paid the tax separately."
+    returned: "Items were returned to your claim box; claim them to list again."
+    no-bids: "Nobody bid during the auction."
+    unpaid: "None of the bidders could pay, so the auction ended without a sale."
+    expired-fixed: "Nobody bought it before it expired."
+    forced: "An admin removed this auction. No bidder was charged."
+    cancelled: "You removed this listing yourself."
+    contact-admin: "Contact a server admin if you have questions."
+    expire-return: "If it does not sell before it expires, the items go back to your claim box."
+    cancel-hint: "You can remove it early in /mart → Auction → My listings (not once a bid has been placed)."
+    knock-rule: "After the end time the hammer knocks every {minutes} min; the sale closes on knock {count}. A new bid restarts the count."
+    outbid: "Your bid was outbid. Nothing was charged when you bid, so there is nothing to refund."
+    rebid: "To keep bidding, go to /mart → Auction → Market and bid again."
+    penalty-ban: "You cannot buy, bid or list on AetherMart until {until}."
+    penalty-debt: "The unpaid part of the fine is recorded as debt. You cannot trade on AetherMart until it is paid (it is taken automatically at your next trade)."
+    penalty-next: "The auction went to the next bidder."
+    daily-empty: "There were no trades in this period."

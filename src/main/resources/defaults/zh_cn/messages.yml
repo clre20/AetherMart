@@ -1,0 +1,776 @@
+# AetherMart 消息文字
+# 支持 & 颜色代码与 &#RRGGBB；{变量} 会自动替换。启动与 /mart reload 时自动补齐缺少的项目。
+messages-version: 1
+# 这个文件的语言；config.yml 换语言时，此文件会备份并以新语言重建
+language: zh_cn
+
+common:
+  no-permission: "&c你没有权限。"
+  loading: "&7数据加载中，请稍后再试。"
+  loading-short: "加载中…"
+  not-enough: "&c余额不足，需要 &e{amount}&c。"
+  bad-amount: "&c金额格式不对（正数，最多 {decimals} 位小数）。"
+  unknown-player: "&c找不到玩家 {player}（需要曾进过服务器）。"
+
+time:
+  day: "天"
+  hour: "小时"
+  minute: "分"
+  second: "秒"
+
+item:
+  durability: "耐久"
+
+currency:
+  unavailable: "&c{currency} 目前无法使用，相关交易暂停。"
+
+input:
+  hint: "&7请在聊天栏输入；输入「&f{cancel}&7」取消（{seconds} 秒后自动取消）。"
+  timeout: "&7输入超时，已返回界面。"
+  cancelled: "&7已取消输入。"
+
+link:
+  required: "&c需要先绑定 Discord 才能交易，请输入 &f/dclink link&c。"
+  unavailable: "&c目前无法确认 Discord 绑定，交易暂停，请联络管理员。"
+
+penalty:
+  banned: "&c你因得标未付款，在 &e{until}&c 前不能在 AetherMart 买卖。欠款：&e{debt}"
+  debt: "&c你还有欠款 &e{debt}&c，付清前不能在 AetherMart 买卖（下次交易时会自动扣款）。"
+  debt-paid: "&a已自动扣款 &e{amount}&a 偿还欠款。"
+  no-debt: "无"
+  applied: "&c拍卖 #A-{id} 落槌时你的余额不足，已改由下一位出价者成交。罚金 &e{fine}&c，欠款 &e{debt}&c，禁止买卖至 &e{until}&c。"
+  join: "&c提醒：你目前不能在 AetherMart 买卖（至 {until}），欠款：{debt}。"
+
+claim:
+  new: "&a领取箱有新的东西！目前共 &e{count}&a 笔。"
+  reminder: "&e你的领取箱有 &6{count}&e 笔待领取。"
+  open-link: "&b&n[点这里打开领取箱]"
+  claimed: "&a已领取。"
+  partial: "&e背包空间不够，已领取一部分，剩下的留在领取箱。"
+  no-space: "&c背包没有空间。"
+  unavailable: "&c这种币目前无法入帐，请稍后再领。"
+  source:
+    bought: "购买"
+    won: "得标"
+    expired: "到期退回"
+    cancelled: "自行下架退回"
+    removed: "管理员下架退回"
+    returned: "建立拍卖退回"
+    income: "卖出收入"
+    refund: "退款"
+
+shop:
+  gone: "&c这个商品已经不存在。"
+  limit: "&c已达购买上限：本期还能买 &e{left}&c 个（上限 {limit}）。"
+  no-space: "&c背包放不下，请先清出空间。"
+  bought: "&a购买成功：&f{item} x{amount}&a，共支付 &e{price}&a。"
+  period:
+    none: "不限"
+    daily: "每日"
+    weekly: "每周"
+    total: "累计"
+  input:
+    quantity: "&e请输入要购买几份 &f{item}&e："
+    bad-quantity: "&c份数要是 1 ～ {max} 的整数。"
+
+auction:
+  mode:
+    fixed: "一口价"
+    bid: "竞标"
+  paused: "&c拍卖场目前休市中。"
+  gone: "&c这笔拍卖已经结束或不存在。"
+  own: "&c不能购买或出价自己的拍卖。"
+  bought: "&a购买成功（#A-{id}），共支付 &e{price}&a，物品已放入领取箱。"
+  won: "&a恭喜得标（#A-{id}），已扣款 &e{price}&a，物品已放入领取箱。"
+  sold: "&a你的拍卖 #A-{id} 已由 &f{buyer}&a 以 &e{price}&a 买下，款项已入帐。"
+  expired: "&7你的拍卖 #A-{id} 已结束且未售出，物品已退回领取箱。"
+  expired-unpaid: "&7你的拍卖 #A-{id} 的出价者都未能付款，已流标，物品退回领取箱。"
+  knock-start: "&6拍卖 #A-{id} 已到结束时间，开始落槌：每 {minutes} 分钟一槌，有人加价就重新起算。"
+  knock: "&6拍卖 #A-{id} 第 {n}／{count} 槌！目前最高 &e{price}"
+  knock-reset: "&6拍卖 #A-{id} 有人加价到 &e{price}&6，落槌重新起算。"
+  create:
+    empty: "&c请至少放一件物品。"
+    banned: "&c{item} 禁止贩售。"
+    bad-currency: "&c这个币种不能用于拍卖。"
+    no-price: "&c请先设置价格。"
+    price-range: "&c价格要在 {min} ～ {max} 之间。"
+    duration-range: "&c拍卖时间不在允许范围内。"
+    duration-range-detail: "&c拍卖时间要在 {min} ～ {max} 之间（格式例如 30m、12h、2d、1d12h）。"
+    limit: "&c你同时上架的拍卖已达上限 {limit} 笔。"
+    done: "&a上架成功！拍卖编号 #A-{id}，价格 &e{price}&a。"
+    cursor: "&c请先把手上（光标）的物品放下。"
+    returned-claim: "&e有些物品背包放不下，已放进领取箱。"
+  bid:
+    done: "&a出价成功（#A-{id}）：&e{price}&a。落槌成交时才会扣款。"
+    too-low: "&c出价至少要 &e{min}&c。"
+    not-enough: "&c你的余额不够支付出价加税 &e{amount}&c。"
+    already-highest: "&c你已经是最高出价者。"
+    outbid: "&e你在拍卖 #A-{id} 的出价已被超过，目前最高 &6{price}&e。"
+  cancel:
+    done: "&a已下架拍卖 #A-{id}，物品已放入领取箱。"
+    has-bids: "&c竞标已有人出价或已进入落槌，不能下架。"
+  input:
+    price: "&e请输入价格（{currency}，最低 {min}）："
+    duration: "&e请输入拍卖时间（{min} ～ {max}，例如 30m、12h、2d、1d12h）："
+    bid: "&e请输入出价（拍卖 #A-{id}，最低 {min}）："
+    search: "&e请输入要搜寻的物品名称或卖家："
+
+trade:
+  type:
+    shop_buy: "系统商店购买"
+    list: "上架"
+    bid: "出价"
+    sale: "成交（一口价）"
+    sale_bid: "成交（竞标）"
+    cancel: "自行下架"
+    force_remove: "强制下架"
+    expire: "流标／到期"
+    penalty: "得标未付款"
+
+admin:
+  auction:
+    removed: "&a已强制下架 #A-{id}（卖家 {seller}），物品退回卖家领取箱。"
+    paused: "&e拍卖场已休市。"
+    resumed: "&a拍卖场已开市。"
+  banned:
+    added: "&a已将 {item} 加入禁止贩售。"
+    exists: "&e这个物品已经在禁止贩售清单里。"
+    removed: "&a已将 {item} 移出禁止贩售。"
+    too-many: "&c禁止贩售清单已达上限。"
+  penalty:
+    lifted: "&a已解除 {player} 的禁令与欠款。"
+  shop:
+    bad-name: "&c名称不能是空的。"
+    bad-number: "&c请输入 {min} ～ {max} 的整数。"
+    below-min: "&c价格不能低于最低售价 {min}。"
+    category-deleted: "&a已删除分类 {name}。"
+    moved: "&a已调整位置。"
+    product-deleted: "&a已下架 {item}。"
+    product-exists: "&e这个分类已有相同物品，已开启它的设置。"
+    product-saved: "&a已保存 {item}。"
+    too-many: "&c数量已达上限。"
+  promo:
+    added: "&a已加入促销（回商品页按保存才生效）。"
+    bad-discount: "&c折扣格式：打折输入例如 20%，或直接输入促销价。"
+    bad-range: "&c结束时间要晚于开始时间与现在。"
+    bad-time: "&c时间格式：yyyy-MM-dd HH:mm，例如 2026-11-11 00:00。"
+    overlap: "&c和其他促销时段重叠。"
+    too-many: "&c促销数量已达上限。"
+  input:
+    category-name: "&e请输入分类名称（可用 & 颜色代码）："
+    price: "&e请输入价格（最低 {min}）："
+    unit: "&e请输入每次购买的数量（1 ～ 2304）："
+    limit: "&e请输入每人购买上限（0 = 不限）："
+    promo-start: "&e请输入促销开始时间（yyyy-MM-dd HH:mm，例如 {example}）："
+    promo-end: "&e请输入促销结束时间（yyyy-MM-dd HH:mm）："
+    promo-discount: "&e请输入折扣：打折输入 20%，或直接输入促销价："
+    player: "&e请输入玩家名称："
+
+command:
+  reloaded: "&a已重新加载配置文件（缺少的项目已自动补齐）。"
+  unknown: "&c未知的指令，输入 /{label} help 查看说明。"
+  player-only: "&c这个指令只能由玩家执行。"
+  log-failed: "&c读取交易纪录失败。"
+  log-header: "&6=== 交易纪录 第 {page} 页（{count} 笔）==="
+  log-line: "&7{time} &f{type} &7{actor} → {other} &e{amount} &7{items}"
+  help:
+    header: "&6=== AetherMart v{version} ==="
+    open: "&e/{label} &7- 打开 AetherMart（系统商店、拍卖、个人设置）"
+    help: "&e/{label} help &7- 显示这份说明"
+    version: "&e/{label} version &7- 版本与检查更新"
+    reload: "&e/{label} reload &7- 重新加载并补齐配置文件"
+    admin: "&e/{label} admin &7- 管理界面"
+    admin-auction: "&e/{label} admin auction &7- 拍卖管理（强制下架、休市）"
+    admin-shop: "&e/{label} admin shop &7- 商店管理（上架、编辑、下架）"
+    admin-log: "&e/{label} admin log [玩家] &7- 交易纪录"
+
+update:
+  checking: "&7目前版本 {version}，正在检查更新…"
+  latest: "&a已是最新版本（{current}）。"
+  outdated: "&e有新版本 &a{latest}&e（目前 {current}）：&f{url}"
+  development: "&b目前版本 {current} 比 GitHub 上的 {latest} 新（开发版）。"
+  no-release: "&7GitHub 尚无发布版本。"
+  failed: "&c检查更新失败：{error}"
+  console-outdated: "有新版本 {latest}（目前 {current}）：{url}"
+  console-development: "目前版本 {current} 比 GitHub 上的 {latest} 新（开发版）"
+  console-latest: "已是最新版本（{current}）"
+  console-no-release: "GitHub 尚无发布版本"
+  console-failed: "检查更新失败：{error}"
+
+gui:
+  common:
+    close:
+      name: "&c关闭"
+    back:
+      name: "&e返回"
+    back-hub:
+      name: "&e返回分流"
+    prev:
+      name: "&e上一页"
+    next:
+      name: "&e下一页"
+    loading:
+      name: "&7加载中…"
+
+  hub:
+    title: "&8AetherMart"
+    shop:
+      name: "&a系统商店"
+      lore:
+        - "&7向服务器购买物品"
+        - "&7共 {count} 个分类"
+        - ""
+        - "&e左键进入"
+    settings:
+      name: "&b个人设置"
+      lore:
+        - "&7Discord 通知开关、绑定与受罚状态"
+        - ""
+        - "&e左键进入"
+    auction:
+      name: "&6玩家拍卖"
+      lore:
+        - "&7玩家之间买卖物品"
+        - "&7进行中的拍卖：{count} 笔"
+        - "&7领取箱：{claims} 笔"
+        - ""
+        - "&e左键进入"
+
+  settings:
+    title: "&8个人设置"
+    "on": "&a开启"
+    "off": "&c关闭"
+    status:
+      name: "&f{player}"
+      lore:
+        - "&7Discord：{link}"
+        - "&7交易状态：{penalty}"
+        - "&7欠款：{debt}"
+        - ""
+        - "&8违约通知无法关闭"
+    link:
+      disabled: "&7服务器未启用私信通知"
+      unavailable: "&c暂时无法读取绑定"
+      linked: "&a已绑定"
+      not-linked: "&e尚未绑定（/dclink link）"
+    penalty:
+      none: "&a正常"
+      banned: "&c禁止买卖至 {until}"
+    notify:
+      purchase:
+        name: "&f购买成功通知"
+        lore: ["&7状态：{state}", "", "&e左键切换"]
+      won:
+        name: "&f得标通知"
+        lore: ["&7状态：{state}", "", "&e左键切换"]
+      sold:
+        name: "&f卖出通知"
+        lore: ["&7状态：{state}", "", "&e左键切换"]
+      listed:
+        name: "&f上架确认通知"
+        lore: ["&7状态：{state}", "", "&e左键切换"]
+      removed:
+        name: "&f下架通知"
+        lore: ["&7状态：{state}", "", "&e左键切换"]
+      expired:
+        name: "&f流标通知"
+        lore: ["&7状态：{state}", "", "&e左键切换"]
+      outbid:
+        name: "&f出价被超越通知"
+        lore: ["&7状态：{state}", "", "&e左键切换"]
+
+  shop:
+    categories:
+      title: "&8系统商店"
+      entry:
+        lore:
+          - "&7{count} 个商品"
+          - ""
+          - "&e左键查看"
+      empty:
+        name: "&7目前没有商品"
+    products:
+      title: "&8系统商店 - {category}"
+      price:
+        - ""
+        - "&7价格：&e{price} &7/ {unit} 个"
+        - "&7币种：&f{currency}"
+      promo:
+        - "&c促销中！&7原价 &m{original}&r"
+        - "&7促销到 {ends}"
+      limit:
+        - "&7购买上限：{period} {limit} 个（剩 {left}）"
+      paused:
+        - ""
+        - "&c此币种暂停交易"
+      click:
+        - ""
+        - "&e左键购买"
+      empty:
+        name: "&7这个分类没有商品"
+    quantity:
+      title: "&8选择数量"
+      info:
+        - ""
+        - "&7购买：&f{portions} 份（{items} 个）"
+        - "&7单价：&e{unit}"
+        - "&7商品金额：&e{subtotal}"
+        - "&7税（{percent}%）：&e{tax}"
+        - "&7应付总额：&6{total}"
+        - "&7目前余额：&f{balance}"
+      option:
+        name: "&f×{portions}"
+        lore:
+          - "&7{items} 个"
+          - "&e左键选择"
+      custom:
+        name: "&f自订份数"
+        lore:
+          - "&7在聊天栏输入份数"
+      confirm:
+        name: "&a确认购买"
+        lore:
+          - "&7{item} x{items}"
+          - "&7应付：&6{total}"
+
+  auction:
+    no-bidder: "尚无"
+    filter:
+      all: "全部"
+    sort:
+      newest: "最新"
+      ending: "即将结束"
+      price_asc: "价格低到高"
+      price_desc: "价格高到低"
+    status:
+      active: "&7剩余 {time}"
+      knocking: "&6落槌中：第 {n}／{count} 槌，{time} 后"
+      settling: "&e结算中"
+    entry:
+      fixed:
+        - ""
+        - "&8拍卖 #A-{id}"
+        - "&7卖家：&f{seller}"
+        - "&7内容：共 {slots} 格、{count} 件"
+        - "&7一口价：&e{price}"
+        - "&7币种：&f{currency}（买家另付税 {tax}%）"
+        - "{status}"
+      bid:
+        - ""
+        - "&8拍卖 #A-{id}"
+        - "&7卖家：&f{seller}"
+        - "&7内容：共 {slots} 格、{count} 件"
+        - "&7竞标：目前 &e{price} &7（底价 {start}）"
+        - "&7最高出价：&f{bidder}（{bids} 次）"
+        - "&7币种：&f{currency}（买家另付税 {tax}%）"
+        - "{status}"
+      own:
+        - "&b这是你的拍卖"
+      leading:
+        - "&a你目前领先"
+      outbid:
+        - "&c你的出价已被超过"
+      click:
+        - ""
+        - "&e左键查看"
+    home:
+      title: "&8玩家拍卖"
+      state-open: "&a开市中"
+      state-paused: "&c休市中"
+      history:
+        name: "&f我的交易纪录"
+        lore: ["&7最近的购买、卖出、出价纪录"]
+      browse:
+        name: "&6拍卖场"
+        lore: ["&7进行中：{count} 笔", "&7状态：{state}", "", "&e左键进入"]
+      create:
+        name: "&a建立拍卖"
+        lore: ["&7放入物品、设置价格与时间", "&7上架数量：{used}／{limit}", "", "&e左键进入"]
+      mine:
+        name: "&b我的上架"
+        lore: ["&7上架中：{count} 笔", "&7出价中：{bidding} 笔", "", "&e左键进入"]
+      claims:
+        name: "&d领取箱"
+        lore: ["&7待领取：{count} 笔", "", "&e左键进入"]
+    browser:
+      title: "&8拍卖场"
+      empty:
+        name: "&7没有符合的拍卖"
+      sort:
+        name: "&f排序：&e{value}"
+        lore: ["&e左键切换"]
+      mode:
+        name: "&f模式：&e{value}"
+        lore: ["&e左键切换"]
+      currency:
+        name: "&f币种：&e{value}"
+        lore: ["&e左键切换"]
+      search:
+        name: "&f搜寻"
+        lore: ["&7依物品名称或卖家搜寻", "&e左键输入"]
+      search-active:
+        name: "&f搜寻：&e{value}"
+        lore: ["&e左键清除搜寻"]
+      mine:
+        name: "&b我的上架"
+      claims:
+        name: "&d领取箱（{count}）"
+    mine:
+      title: "&8我的上架与出价"
+      empty:
+        name: "&7你没有上架或出价中的拍卖"
+    preview:
+      title: "&8拍卖 #A-{id}"
+      info-fixed:
+        name: "&e拍卖 #A-{id}（一口价）"
+        lore:
+          - "&7卖家：&f{seller}"
+          - "&7内容：共 {slots} 格、{count} 件"
+          - "&7售价：&e{price}"
+          - "&7币种：&f{currency}（买家另付税 {tax}%）"
+          - "{status}"
+      info-bid:
+        name: "&6拍卖 #A-{id}（竞标）"
+        lore:
+          - "&7卖家：&f{seller}"
+          - "&7内容：共 {slots} 格、{count} 件"
+          - "&7底价：&f{start}"
+          - "&7目前最高：&e{price}（{bidder}）"
+          - "&7下次最低出价：&e{min}"
+          - "&7币种：&f{currency}（买家另付税 {tax}%）"
+          - "{status}"
+          - ""
+          - "&8出价时只检查余额，落槌成交才扣款"
+      buy:
+        name: "&a购买"
+        lore: ["&7售价 {price}，另付税 {tax}%", "", "&e左键购买"]
+      bid:
+        name: "&6出价"
+        lore: ["&7最低 {min}，另付税 {tax}%", "", "&e左键输入出价"]
+      settling:
+        name: "&e结算中"
+      cancel:
+        name: "&e下架"
+        lore: ["&7物品会退回领取箱", "", "&e左键下架"]
+      cancel-confirm:
+        name: "&c再点一次确认下架"
+      cannot-cancel:
+        name: "&7无法下架"
+        lore: ["&7竞标已有人出价或已进入落槌"]
+      force:
+        name: "&c强制下架"
+        lore: ["&7物品退回卖家领取箱", "&7出价者都没被扣款", "", "&e左键"]
+      force-confirm:
+        name: "&4再点一次确认强制下架"
+    confirm-buy:
+      title: "&8确认购买 #A-{id}"
+      confirm:
+        name: "&a确认购买"
+        lore: ["&7售价：{price}", "&7税：{taxamount}", "&7共支付：&6{total}"]
+      cancel:
+        name: "&c取消"
+    create:
+      title: "&8建立拍卖（放入要卖的物品）"
+      unset: "未设置"
+      cancel:
+        name: "&c取消"
+        lore: ["&7物品退回背包"]
+      mode:
+        name: "&f模式：&e{mode}"
+        lore: ["&7一口价：第一个付钱的人买走", "&7竞标：时间到后每 {knock} 分钟一槌，第 {knocks} 槌成交", "", "&e左键切换"]
+      currency:
+        name: "&f币种：&e{currency}"
+        lore: ["&e左键切换"]
+      price:
+        name: "&f售价：&e{price}"
+        lore: ["&7最低 {min}", "&7买家另付税 {tax}%，你实收售价", "", "&e左键输入"]
+      start:
+        name: "&f底价：&e{price}"
+        lore: ["&7最低 {min}", "&7买家另付税 {tax}%，你实收得标价", "", "&e左键输入"]
+      duration:
+        name: "&f拍卖时间：&e{duration}"
+        lore: ["&e左键输入（例如 12h、2d）"]
+      info:
+        name: "&f说明"
+        lore:
+          - "&7把要卖的物品放进上面 3 排（只能左键）"
+          - "&7整包一起卖；要分开卖请分开建立"
+          - "&7上架数量：{used}／{limit}"
+      confirm:
+        name: "&a确认上架"
+        lore: ["&7{mode}｜{price}｜{duration}"]
+
+  claims:
+    title: "&8领取箱"
+    empty:
+      name: "&7领取箱是空的"
+    all:
+      name: "&a全部领取"
+      lore: ["&7共 {count} 笔"]
+    money:
+      name: "&6{amount}"
+      lore: ["&7来源：{source}", "&7时间：{time}", "", "&e左键领取"]
+    items:
+      lore:
+        - ""
+        - "&7来源：{source}"
+        - "&7共 {slots} 格、{count} 件"
+        - "&8{summary}"
+        - "&7时间：{time}"
+        - ""
+        - "&e左键领取"
+
+  history:
+    title: "&8我的交易纪录"
+    empty:
+      name: "&7没有纪录"
+    entry:
+      name: "&f{type}"
+      lore:
+        - "&7时间：{time}"
+        - "&7{actor} → {other}"
+        - "&7金额：&e{amount}"
+        - "&7拍卖：{auction}"
+        - "&8{items}"
+        - "&8明细：{receipt}"
+
+  log:
+    title: "&8交易纪录（管理）"
+    filter:
+      name: "&f类型：&e{value}"
+      lore: ["&e左键切换"]
+    search:
+      name: "&f依玩家搜寻"
+      lore: ["&e左键输入玩家名称"]
+    search-active:
+      name: "&f玩家：&e{value}"
+      lore: ["&e左键清除"]
+
+  admin:
+    common:
+      cancel:
+        name: "&c取消（不保存）"
+      save:
+        name: "&a保存"
+      move-up:
+        name: "&f往前移"
+      move-down:
+        name: "&f往后移"
+    home:
+      title: "&8AetherMart 管理"
+      shop:
+        name: "&a商店管理"
+        lore: ["&7分类、商品上架／编辑／下架、促销"]
+      shop-locked:
+        name: "&7商店管理（没有权限）"
+      auction:
+        name: "&6拍卖管理"
+        lore: ["&7强制下架、休市、禁止贩售、受罚名单"]
+      auction-locked:
+        name: "&7拍卖管理（没有权限）"
+      log:
+        name: "&b交易纪录"
+        lore: ["&7所有交易，可依玩家与类型查询"]
+      log-locked:
+        name: "&7交易纪录（没有权限）"
+    categories:
+      title: "&8商店管理 - 分类"
+      entry:
+        lore: ["&7{count} 个商品", "&8ID：{id}", "", "&e左键编辑"]
+      add:
+        name: "&a新增分类"
+        lore: ["&e左键输入名称"]
+    category:
+      title: "&8分类设置"
+      rename:
+        name: "&f改名称"
+        lore: ["&7目前：{name}", "&e左键输入"]
+      icon:
+        name: "&f改图示"
+        lore: ["&7左键后，点自己背包的物品"]
+      icon-picking:
+        name: "&a请点自己背包的物品"
+        lore: ["&7再点一次取消"]
+      products:
+        name: "&f商品列表"
+        lore: ["&7{count} 个商品", "&e左键管理"]
+      delete:
+        name: "&c删除分类"
+        lore: ["&7里面的 {count} 个商品也会一起删除", "&e左键（需点两下）"]
+      delete-confirm:
+        name: "&4再点一次确认删除"
+    products:
+      title: "&8商品管理 - {category}"
+      entry:
+        - ""
+        - "&7价格：&e{price} &7/ {unit} 个"
+        - "&7币种：{currency}"
+        - "&7购买上限：{limit}"
+        - "&7促销排程：{promos} 笔"
+        - ""
+        - "&e左键编辑"
+      help:
+        name: "&f说明"
+        lore: ["&7点自己背包的物品即可上架", "&7会复制一份（数量 1、保留完整 NBT）", "&7背包里的物品不会被拿走"]
+    product:
+      title: "&8商品设置"
+      title-new: "&8新增商品"
+      preview:
+        - ""
+        - "&7价格：&e{price} &7/ {unit} 个"
+        - "&7币种：{currency}"
+        - "&7上限：{period} {limit}"
+        - "&7促销：{promos} 笔"
+      price:
+        name: "&f价格：&e{price}"
+        lore: ["&7最低 {min}", "&e左键输入"]
+      currency:
+        name: "&f币种：&e{currency}"
+        lore: ["&e左键切换"]
+      unit:
+        name: "&f每次购买：&e{unit} 个"
+        lore: ["&e左键输入"]
+      period:
+        name: "&f上限期间：&e{period}"
+        lore: ["&7不限／每日／每周／累计", "&e左键切换"]
+      limit:
+        name: "&f每人上限：&e{limit} 个"
+        lore: ["&70 = 不限", "&e左键输入"]
+      promotions:
+        name: "&f促销排程（{promos} 笔）"
+        lore: ["&e左键管理"]
+      delete:
+        name: "&c下架此商品"
+        lore: ["&e左键（需点两下）"]
+      delete-confirm:
+        name: "&4再点一次确认下架"
+    promotions:
+      title: "&8促销排程"
+      active: "&a进行中"
+      upcoming: "&e即将开始"
+      ended: "&7已结束"
+      percent: "打 {percent}% 折扣"
+      fixed: "促销价 {price}"
+      entry:
+        name: "{state} &f{discount}"
+        lore: ["&7{start} ～ {end}", "", "&e左键删除（需点两下）"]
+      entry-confirm:
+        name: "&4再点一次确认删除"
+        lore: ["&7{start} ～ {end}"]
+      add:
+        name: "&a新增促销"
+        lore: ["&7依序输入开始时间、结束时间、折扣"]
+      help:
+        name: "&f说明"
+        lore: ["&7时段不能重叠", "&7促销价不能低于最低售价", "&7回商品页按保存才生效"]
+    auctions:
+      title: "&8拍卖管理"
+      entry:
+        - ""
+        - "&8拍卖 #A-{id}（{phase}）"
+        - "&7卖家：{seller}"
+        - "&7共 {count} 件，出价 {bids} 次"
+        - ""
+        - "&e左键预览"
+      banned:
+        name: "&f禁止贩售（{count}）"
+        lore: ["&e左键管理"]
+      penalties:
+        name: "&f受罚名单"
+        lore: ["&e左键查看"]
+      pause:
+        name: "&a开市中"
+        lore: ["&e左键休市（不能上架、购买、出价）"]
+      resume:
+        name: "&c休市中"
+        lore: ["&e左键开市"]
+    banned:
+      title: "&8禁止贩售"
+      entry:
+        - ""
+        - "&e左键移除（需点两下）"
+      entry-confirm:
+        - ""
+        - "&4再点一次确认移除"
+      help:
+        name: "&f说明"
+        lore: ["&7点自己背包的物品加入", "&7比对完整 NBT（不看数量）", "&7潜影盒、束口袋里的物品也会检查"]
+    penalties:
+      title: "&8受罚名单"
+      expired: "禁令已到期"
+      empty:
+        name: "&7目前没有受罚的玩家"
+      entry:
+        name: "&f{player}"
+        lore: ["&7禁止买卖至：{until}", "&7欠款：{debt}", "&8{reason}", "", "&e左键解除（需点两下）"]
+      entry-confirm:
+        name: "&4再点一次确认解除 {player}"
+        lore: ["&7会同时清除欠款"]
+
+discord:
+  footer: "{server} · AetherMart"
+  dm:
+    shop-purchase:
+      title: "购买成功"
+      description: "你在系统商店购买了 **{item} x{amount}**，共支付 **{price}**。\n明细编号：{receipt}"
+    auction-buy:
+      title: "拍卖购买成功"
+      description: "你以 **{price}** 买下 {seller} 的拍卖 #A-{id}。\n物品：{items}\n物品已放入领取箱。明细编号：{receipt}"
+    won:
+      title: "恭喜得标"
+      description: "你得标了 {seller} 的拍卖 #A-{id}，已扣款 **{price}**。\n物品：{items}\n物品已放入领取箱。明细编号：{receipt}"
+    sold:
+      title: "拍卖已卖出"
+      description: "你的拍卖 #A-{id} 已由 {buyer} 买下，你实收 **{price}**。\n物品：{items}\n明细编号：{receipt}"
+    listed:
+      title: "上架成功"
+      description: "拍卖 #A-{id}（{mode}）已上架，价格 **{price}**，结束时间 {ends}。\n物品：{items}\n明细编号：{receipt}"
+    cancelled:
+      title: "已下架"
+      description: "你已下架拍卖 #A-{id}，物品已退回领取箱。\n物品：{items}\n明细编号：{receipt}"
+    force-removed:
+      title: "拍卖被管理员下架"
+      description: "你的拍卖 #A-{id} 已被管理员 {admin} 下架，物品已退回领取箱。\n物品：{items}\n明细编号：{receipt}"
+    expired:
+      title: "拍卖已结束（流标）"
+      description: "你的拍卖 #A-{id} 没有成交，物品已退回领取箱。\n物品：{items}\n明细编号：{receipt}"
+    outbid:
+      title: "出价被超越"
+      description: "你在拍卖 #A-{id} 的出价已被超过，目前最高 **{price}**，下次最低出价 {min}。\n物品：{items}"
+    penalty:
+      title: "得标未付款（违约）"
+      description: "拍卖 #A-{id} 落槌时你的余额不足以支付 {price}。\n罚金 **{fine}**，欠款 **{debt}**，禁止买卖至 {until}。\n明细编号：{receipt}"
+    combined:
+      title: "交易通知汇总（{count} 则）"
+      description: "交易尖峰时段，{player} 的通知合并寄送：\n{lines}"
+      line: "• {title}"
+  admin:
+    shop-purchase:
+      title: "系统商店购买"
+      description: "{player} 购买 {item} x{amount}，支付 {price}"
+    sale:
+      title: "拍卖成交"
+      description: "#A-{id}（{mode}）{seller} → {buyer}，成交 {price}，税 {tax}\n物品：{items}"
+    force-removed:
+      title: "强制下架"
+      description: "{admin} 下架了 {seller} 的拍卖 #A-{id}\n物品：{items}"
+    penalty:
+      title: "得标未付款"
+      description: "{player} 未付款拍卖 #A-{id}（{price}），罚金 {fine}，欠款 {debt}，禁止至 {until}"
+    paused:
+      title: "拍卖场休市"
+      description: "{admin} 将拍卖场休市"
+    resumed:
+      title: "拍卖场开市"
+      description: "{admin} 将拍卖场开市"
+    combined:
+      title: "交易纪录汇总（{count} 则）"
+      description: "{lines}"
+  daily:
+    report:
+      title: "每日交易汇整"
+      description: "期间：{period}\n成交笔数：{count}，参与玩家：{players}\n{lines}"
+    empty:
+      title: "每日交易汇整"
+      description: "期间：{period}\n这段期间没有任何交易。"
+    line: "• {currency}：成交 {total}，税收 {tax}（{count} 笔）"

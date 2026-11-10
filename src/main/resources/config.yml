@@ -1,0 +1,98 @@
+# AetherMart 通用設定
+# 啟動與 /mart reload 時會自動補齊缺少的項目並保留你的設定值
+config-version: 1
+
+prefix: "&8[&bAetherMart&8] &r"
+
+# 語言：zh_tw（繁中）、zh_cn（簡中）、en_us（英文）
+# 決定原版物品名稱的翻譯，以及 messages.yml、pdf.yml 的語言
+# 換語言後重載：舊的 messages.yml、pdf.yml 會改名備份（例如 messages-zh_tw.yml），再以新語言重建
+language: zh_tw
+
+# 時區（交易時間、每日結算、購買上限重置、促銷排程都用這個時區）
+timezone: "Asia/Taipei"
+
+# 任何金額輸入的上限
+max-amount: 1000000000
+
+# 幣別：鍵是幣別 ID（給 shop.yml、auction.yml 用）
+#   type: vault = 預設幣（走 Vault）；excellenteconomy = ExcellentEconomy 的貨幣
+#   id: ExcellentEconomy 裡的貨幣 ID（只有 excellenteconomy 需要）
+#   name: 幣名稱；unit: 金額後面的單位
+#   default: true 的那一個是預設幣（只能有一個）
+currencies:
+  money:
+    type: vault
+    name: "金幣"
+    unit: "元"
+    default: true
+  special:
+    type: excellenteconomy
+    id: "gems"
+    name: "寶石"
+    unit: "寶石"
+    default: false
+
+chat-input:
+  # 聊天輸入逾時（秒）
+  timeout: 60
+  # 輸入這個字取消並返回介面（英文 cancel 也一律可以取消）
+  cancel-word: "取消"
+
+discord:
+  # 機器人 Token；留空 = 不發任何 Discord 通知
+  token: ""
+  admin:
+    # 管理員頻道 ID
+    channel-id: ""
+    # 每筆交易發一張即時卡片
+    per-trade: true
+    daily-summary:
+      enabled: true
+      # 每日結算時間（依上面的時區）
+      time: "00:00"
+      # 當天沒有交易時也送一張「無交易」卡片
+      send-when-empty: true
+  personal:
+    # 個人私訊通知（送到 DiscordLink 綁定的帳號）
+    enabled: true
+  require-link:
+    # 未綁定 Discord 不能購買與出價
+    buy: false
+    # 未綁定 Discord 不能建立拍賣
+    sell: false
+    # DiscordLink 免驗證名單上的玩家視為已綁定（但收不到私訊）
+    allow-bypass: true
+  # 兩則通知之間至少間隔幾毫秒
+  send-interval-ms: 1500
+  # 佇列超過這個數量就進入尖峰模式，同一人的通知合併寄送
+  peak-threshold: 20
+  # 尖峰模式下，同一人幾分鐘內的通知合併成一則
+  merge-window-minutes: 5
+  # 線上玩家的綁定資料多久更新一次（秒）
+  link-refresh-seconds: 60
+
+logs:
+  # 單一 .log 超過這個大小（MB）就壓縮並換新檔
+  max-file-size-mb: 10
+  # 壓縮檔保留天數；0 = 不限
+  retention-days: 90
+  # logs 資料夾總大小上限（MB），超過從最舊的刪；0 = 不限
+  max-total-mb: 500
+
+reports:
+  # 每日彙整 PDF 本機保留天數；0 = 不限
+  retention-days: 90
+
+records:
+  # 資料庫交易紀錄（介面查詢用）保留天數
+  retention-days: 30
+
+sounds:
+  enabled: true
+
+update-checker:
+  # 啟動時在背景檢查新版本
+  check-on-startup: true
+  # 有新版本時，有 aethermart.version 權限的玩家登入 3 秒後提醒
+  notify-on-join: true

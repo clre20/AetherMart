@@ -1,0 +1,190 @@
+# AetherMart PDF 設定
+# PDF 上所有文字都在這裡；啟動與 /mart reload 時自動補齊缺少的項目
+pdf-version: 1
+# 這個檔案的語言；config.yml 換語言時，此檔會備份並以新語言重建
+language: zh_tw
+
+# 頁首
+server-name: "我的伺服器"
+subtitle: "AetherMart 交易系統"
+
+# 字型：留空 = 內建 Noto Sans TC／SC（繁中、簡中、英文都能顯示）
+# 要換字型請把 TTF 放進 plugins/AetherMart/fonts/ 並填檔名（只接受 .ttf）
+font:
+  regular: ""
+  bold: ""
+
+colors:
+  theme: "#1F5F6B"        # 頁首色帶、標題
+  stamp:
+    done: "#C0392B"       # 已成交（朱紅）
+    listed: "#1D4ED8"     # 拍賣中（藍）
+    outbid: "#7E22CE"     # 已被超越（紫）
+    expired: "#6B7280"    # 已流標（灰）
+    removed: "#C2410C"    # 已下架（橘）
+    penalty: "#991B1B"    # 違約（深紅）
+    summary: "#1F5F6B"    # 已彙總／已結算（深青）
+
+text:
+  generated: "產生時間 {time}"
+  footer: "本明細由 AetherMart 自動產生，僅供交易紀錄參考"
+  page: "第 {page}／{pages} 頁"
+  continued: "{title}（續）"
+  sections:
+    items: "物品明細"
+    returned-items: "退回物品"
+    auction-items: "拍賣物品"
+    amount: "金額"
+    notes: "備註"
+    summary: "本期總表"
+    by-currency: "各幣別合計"
+    overview: "各幣別概況"
+    by-type: "依類型"
+    top: "前 10 大成交"
+    all: "全部交易"
+  columns:
+    index: "#"
+    item: "物品"
+    amount: "數量"
+    remark: "附魔與耐久"
+    time: "時間"
+    type: "類型"
+    auction: "拍賣編號"
+    money: "金額"
+    currency: "幣別"
+    spent: "支出"
+    received: "收入"
+    net: "淨額"
+    count: "筆數"
+    buyer: "買方"
+    seller: "賣方"
+    goods: "物品"
+  fields:
+    id: "明細編號"
+    time: "交易時間"
+    type: "類型"
+    auction-id: "拍賣編號"
+    category: "商品分類"
+    buyer: "買方"
+    seller: "賣方"
+    currency: "幣別"
+    count: "物品件數"
+    unit: "購買單位"
+    listed-at: "上架時間"
+    ends-at: "結束時間"
+    ended-at: "結束時間"
+    won-at: "結標時間"
+    winner: "得標者"
+    bidder: "出價者"
+    bids: "出價次數"
+    bidders: "出價人數"
+    handler: "處理人員"
+    mode: "模式"
+    remaining: "剩餘時間"
+    duration: "拍賣期間"
+    player: "玩家"
+    period: "期間"
+    records: "筆數"
+    reason: "原因"
+    pages: "後續頁面"
+    settled-at: "結算時間"
+    timezone: "時區"
+    trade-count: "交易筆數"
+    players: "參與玩家"
+    ban-until: "禁止買賣至"
+  values:
+    system-shop: "系統商店"
+    items-count: "共 {slots} 格、{amount} 件"
+    unit-count: "每 {unit} 個"
+    bids: "{count} 次（{people} 人）"
+    people: "{count} 人"
+    none: "—"
+    peak: "交易尖峰時段，通知合併寄送"
+    each-page: "每筆一頁"
+    records: "{count} 筆"
+    pieces: "{count} 個"
+  modes:
+    fixed: "一口價"
+    bid: "競標"
+  trade-types:
+    shop-buy: "系統商店購買"
+    auction-buy: "拍賣購買（一口價）"
+    auction-won: "拍賣得標（競標）"
+    sold-fixed: "拍賣售出（一口價）"
+    sold-bid: "拍賣售出（競標）"
+    listed-fixed: "拍賣上架（一口價）"
+    listed-bid: "拍賣上架（競標）"
+    outbid: "競標被超過"
+    expired-fixed: "到期未售出（一口價）"
+    expired-bid: "拍賣流標（競標）"
+    expired-unpaid: "流標（得標者皆未付款）"
+    cancelled: "賣家自行下架"
+    force-removed: "管理員強制下架"
+    penalty: "得標未付款"
+    list: "上架"
+    bid: "出價"
+    sale: "成交（一口價）"
+    sale-bid: "成交（競標）"
+    cancel: "下架"
+    force-remove: "強制下架"
+    expire: "流標／到期"
+  totals:
+    unit-price: "單價（{unit} 個）"
+    promo: "促銷（原價 {original}）"
+    quantity: "購買數量"
+    subtotal: "商品金額"
+    tax: "稅（{percent}%）"
+    balance-after: "付款後餘額"
+    paid: "實付金額"
+    price: "成交價"
+    sale-price: "售價"
+    received: "實收金額"
+    expected: "售出後預計實收"
+    buyer-tax: "買家另付稅（{percent}%）"
+    start-price: "底價"
+    win-price: "得標價"
+    charged: "本次扣款"
+    your-bid: "你的出價"
+    highest: "目前最高價"
+    next-min: "下次最低出價"
+    deal: "成交金額"
+    fine: "罰金（{percent}%）"
+    fine-paid: "已扣罰金"
+    debt: "欠款"
+    total-sales: "{currency} 成交總額"
+    total-tax: "{currency} 稅收"
+    trade-count: "交易筆數"
+  types:
+    shop-purchase:  { title: "購買明細",       subtitle: "PURCHASE RECEIPT",     stamp: "已成交",   color: done }
+    auction-buy:    { title: "購買明細",       subtitle: "PURCHASE RECEIPT",     stamp: "已成交",   color: done }
+    auction-won:    { title: "得標明細",       subtitle: "WINNING BID RECEIPT",  stamp: "已成交",   color: done }
+    auction-sold:   { title: "銷售明細",       subtitle: "SALES RECEIPT",        stamp: "已成交",   color: done }
+    auction-listed: { title: "上架確認",       subtitle: "LISTING CONFIRMATION", stamp: "拍賣中",   color: listed }
+    auction-outbid: { title: "出價被超越通知", subtitle: "OUTBID NOTICE",        stamp: "已被超越", color: outbid }
+    auction-expired: { title: "流標通知",      subtitle: "AUCTION ENDED",        stamp: "已流標",   color: expired }
+    auction-removed: { title: "下架通知",      subtitle: "LISTING REMOVED",      stamp: "已下架",   color: removed }
+    penalty:        { title: "違約通知",       subtitle: "PAYMENT DEFAULT",      stamp: "違約",     color: penalty }
+    combined:       { title: "交易明細彙總",   subtitle: "COMBINED STATEMENT",   stamp: "已彙總",   color: summary }
+    daily:          { title: "每日交易彙整",   subtitle: "DAILY SUMMARY",        stamp: "已結算",   color: summary }
+  notes:
+    claim-box: "物品已放入領取箱，可在 /mart → 拍賣 → 領取箱 領取。"
+    to-inventory: "物品已直接放入背包。"
+    paid-from: "款項已從你的{currency}帳戶扣除。"
+    paid-on-win: "得標價與稅已在落槌成交時從你的{currency}帳戶扣除。"
+    deposited: "款項已直接存入你的{currency}帳戶；稅由買家另付。"
+    returned: "物品已退回領取箱，可領回後重新上架。"
+    no-bids: "拍賣期間沒有人出價。"
+    unpaid: "所有出價者都未能付款，拍賣流標。"
+    expired-fixed: "到期時沒有人購買。"
+    forced: "此拍賣由管理員下架，出價者皆未被扣款。"
+    cancelled: "你已自行下架此拍賣。"
+    contact-admin: "如有疑問請聯絡伺服器管理員。"
+    expire-return: "到期未售出時，物品會退回領取箱。"
+    cancel-hint: "可在 /mart → 拍賣 → 我的上架 提前下架（競標有人出價後不能下架）。"
+    knock-rule: "結束時間到後每 {minutes} 分鐘敲一槌，第 {count} 槌成交；期間有人加價就重新起算。"
+    outbid: "你的出價已被超過；出價時沒有扣款，所以不需要退款。"
+    rebid: "想繼續競標，請到 /mart → 拍賣 → 拍賣場 再次出價。"
+    penalty-ban: "你在 {until} 前不能在 AetherMart 購買、出價或上架。"
+    penalty-debt: "罰金不足的部分已記為欠款，付清前不能在 AetherMart 買賣（下次交易時自動扣款）。"
+    penalty-next: "拍賣已改由下一位出價者成交。"
+    daily-empty: "這段期間沒有任何交易。"

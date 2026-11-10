@@ -1,0 +1,776 @@
+# AetherMart messages
+# Supports & colour codes and &#RRGGBB; {variables} are replaced automatically. Missing keys are added on start and /mart reload.
+messages-version: 1
+# Language of this file; when config.yml changes language, this file is backed up and rebuilt
+language: en_us
+
+common:
+  no-permission: "&cYou don't have permission."
+  loading: "&7Loading data, please try again in a moment."
+  loading-short: "Loading…"
+  not-enough: "&cNot enough money. You need &e{amount}&c."
+  bad-amount: "&cInvalid amount (positive number, up to {decimals} decimal places)."
+  unknown-player: "&cPlayer {player} not found (they must have joined the server before)."
+
+time:
+  day: "d"
+  hour: "h"
+  minute: "m"
+  second: "s"
+
+item:
+  durability: "Durability"
+
+currency:
+  unavailable: "&c{currency} is unavailable right now; related trades are paused."
+
+input:
+  hint: "&7Type in chat; type \"&f{cancel}&7\" to cancel (cancels automatically after {seconds} s)."
+  timeout: "&7Input timed out; back to the menu."
+  cancelled: "&7Input cancelled."
+
+link:
+  required: "&cYou need to link Discord before trading. Use &f/dclink link&c."
+  unavailable: "&cDiscord links can't be checked right now, so trading is paused. Please contact an admin."
+
+penalty:
+  banned: "&cYou didn't pay for a winning bid and can't trade on AetherMart until &e{until}&c. Debt: &e{debt}"
+  debt: "&cYou owe &e{debt}&c. You can't trade on AetherMart until it is paid (it is taken automatically at your next trade)."
+  debt-paid: "&a&e{amount}&a was taken automatically to pay your debt."
+  no-debt: "None"
+  applied: "&cYou couldn't pay when auction #A-{id} closed, so it went to the next bidder. Fine &e{fine}&c, debt &e{debt}&c, banned from trading until &e{until}&c."
+  join: "&cReminder: you can't trade on AetherMart until {until}. Debt: {debt}."
+
+claim:
+  new: "&aSomething new arrived in your claim box! &e{count}&a waiting."
+  reminder: "&eYou have &6{count}&e entries waiting in your claim box."
+  open-link: "&b&n[Click to open your claim box]"
+  claimed: "&aClaimed."
+  partial: "&eNot enough inventory space; part was claimed and the rest stays in the claim box."
+  no-space: "&cYour inventory is full."
+  unavailable: "&cThis currency can't be deposited right now. Please try again later."
+  source:
+    bought: "Purchase"
+    won: "Won auction"
+    expired: "Expired, returned"
+    cancelled: "Removed by you, returned"
+    removed: "Removed by admin, returned"
+    returned: "Returned from listing"
+    income: "Sale income"
+    refund: "Refund"
+
+shop:
+  gone: "&cThis product no longer exists."
+  limit: "&cPurchase limit reached: you can buy &e{left}&c more this period (limit {limit})."
+  no-space: "&cNot enough inventory space. Please make room first."
+  bought: "&aBought &f{item} x{amount}&a for &e{price}&a."
+  period:
+    none: "Unlimited"
+    daily: "Daily"
+    weekly: "Weekly"
+    total: "Total"
+  input:
+    quantity: "&eHow many portions of &f{item}&e do you want to buy?"
+    bad-quantity: "&cEnter a whole number from 1 to {max}."
+
+auction:
+  mode:
+    fixed: "Buy now"
+    bid: "Auction"
+  paused: "&cThe auction market is closed right now."
+  gone: "&cThis auction has ended or doesn't exist."
+  own: "&cYou can't buy or bid on your own auction."
+  bought: "&aBought auction #A-{id} for &e{price}&a in total. The items are in your claim box."
+  won: "&aYou won auction #A-{id}! &e{price}&a was charged and the items are in your claim box."
+  sold: "&aYour auction #A-{id} was bought by &f{buyer}&a for &e{price}&a. The money has been deposited."
+  expired: "&7Your auction #A-{id} ended without a sale. The items were returned to your claim box."
+  expired-unpaid: "&7None of the bidders on your auction #A-{id} could pay, so it ended without a sale. The items were returned to your claim box."
+  knock-start: "&6Auction #A-{id} reached its end time. Going once… one knock every {minutes} min; a new bid restarts the count."
+  knock: "&6Auction #A-{id}: knock {n} of {count}! Highest bid &e{price}"
+  knock-reset: "&6Someone raised auction #A-{id} to &e{price}&6. The knocks start over."
+  create:
+    empty: "&cPut in at least one item."
+    banned: "&c{item} can't be sold."
+    bad-currency: "&cThis currency can't be used for auctions."
+    no-price: "&cSet a price first."
+    price-range: "&cThe price must be between {min} and {max}."
+    duration-range: "&cThe duration is outside the allowed range."
+    duration-range-detail: "&cThe duration must be between {min} and {max} (for example 30m, 12h, 2d, 1d12h)."
+    limit: "&cYou already have the maximum of {limit} listings."
+    done: "&aListed! Auction #A-{id}, price &e{price}&a."
+    cursor: "&cPut down the item on your cursor first."
+    returned-claim: "&eSome items didn't fit in your inventory and were put in your claim box."
+  bid:
+    done: "&aBid placed on #A-{id}: &e{price}&a. You are only charged when the hammer falls."
+    too-low: "&cYour bid must be at least &e{min}&c."
+    not-enough: "&cYour balance can't cover the bid plus tax, &e{amount}&c."
+    already-highest: "&cYou are already the highest bidder."
+    outbid: "&eYour bid on auction #A-{id} was outbid. Highest is now &6{price}&e."
+  cancel:
+    done: "&aAuction #A-{id} removed. The items are in your claim box."
+    has-bids: "&cThis auction already has bids or is being knocked down, so it can't be removed."
+  input:
+    price: "&eEnter a price ({currency}, minimum {min}):"
+    duration: "&eEnter the duration ({min} to {max}, for example 30m, 12h, 2d, 1d12h):"
+    bid: "&eEnter your bid (auction #A-{id}, minimum {min}):"
+    search: "&eEnter an item name or seller to search for:"
+
+trade:
+  type:
+    shop_buy: "Shop purchase"
+    list: "Listed"
+    bid: "Bid"
+    sale: "Sale (buy now)"
+    sale_bid: "Sale (auction)"
+    cancel: "Removed by seller"
+    force_remove: "Force removed"
+    expire: "Expired"
+    penalty: "Unpaid winning bid"
+
+admin:
+  auction:
+    removed: "&aForce removed #A-{id} (seller {seller}). The items went back to the seller's claim box."
+    paused: "&eThe auction market is now closed."
+    resumed: "&aThe auction market is now open."
+  banned:
+    added: "&aAdded {item} to the banned items."
+    exists: "&eThis item is already banned."
+    removed: "&aRemoved {item} from the banned items."
+    too-many: "&cThe banned item list is full."
+  penalty:
+    lifted: "&aLifted the ban and debt of {player}."
+  shop:
+    bad-name: "&cThe name can't be empty."
+    bad-number: "&cEnter a whole number from {min} to {max}."
+    below-min: "&cThe price can't be lower than the minimum price {min}."
+    category-deleted: "&aDeleted category {name}."
+    moved: "&aMoved."
+    product-deleted: "&aRemoved {item}."
+    product-exists: "&eThis category already has the same item; opened its settings."
+    product-saved: "&aSaved {item}."
+    too-many: "&cThe maximum number has been reached."
+  promo:
+    added: "&aPromotion added (press Save on the product page to apply it)."
+    bad-discount: "&cDiscount format: enter a percentage such as 20%, or the promotional price."
+    bad-range: "&cThe end time must be after the start time and after now."
+    bad-time: "&cTime format: yyyy-MM-dd HH:mm, for example 2026-11-11 00:00."
+    overlap: "&cThis overlaps another promotion."
+    too-many: "&cThe maximum number of promotions has been reached."
+  input:
+    category-name: "&eEnter a category name (& colour codes allowed):"
+    price: "&eEnter a price (minimum {min}):"
+    unit: "&eEnter how many items one purchase gives (1 to 2304):"
+    limit: "&eEnter the limit per player (0 = unlimited):"
+    promo-start: "&eEnter the promotion start (yyyy-MM-dd HH:mm, for example {example}):"
+    promo-end: "&eEnter the promotion end (yyyy-MM-dd HH:mm):"
+    promo-discount: "&eEnter the discount: a percentage such as 20%, or the promotional price:"
+    player: "&eEnter a player name:"
+
+command:
+  reloaded: "&aConfiguration reloaded (missing keys were added)."
+  unknown: "&cUnknown command. Use /{label} help."
+  player-only: "&cOnly players can use this command."
+  log-failed: "&cCould not read the trade log."
+  log-header: "&6=== Trade log, page {page} ({count} records) ==="
+  log-line: "&7{time} &f{type} &7{actor} → {other} &e{amount} &7{items}"
+  help:
+    header: "&6=== AetherMart v{version} ==="
+    open: "&e/{label} &7- Open AetherMart (system shop, auctions, settings)"
+    help: "&e/{label} help &7- Show this help"
+    version: "&e/{label} version &7- Version and update check"
+    reload: "&e/{label} reload &7- Reload and fill in the config files"
+    admin: "&e/{label} admin &7- Admin menu"
+    admin-auction: "&e/{label} admin auction &7- Manage auctions (force remove, close market)"
+    admin-shop: "&e/{label} admin shop &7- Manage the shop (add, edit, remove)"
+    admin-log: "&e/{label} admin log [player] &7- Trade log"
+
+update:
+  checking: "&7Current version {version}. Checking for updates…"
+  latest: "&aYou are on the latest version ({current})."
+  outdated: "&eA new version &a{latest}&e is available (current {current}): &f{url}"
+  development: "&bCurrent version {current} is newer than {latest} on GitHub (development build)."
+  no-release: "&7There are no releases on GitHub yet."
+  failed: "&cUpdate check failed: {error}"
+  console-outdated: "A new version {latest} is available (current {current}): {url}"
+  console-development: "Current version {current} is newer than {latest} on GitHub (development build)"
+  console-latest: "You are on the latest version ({current})"
+  console-no-release: "There are no releases on GitHub yet"
+  console-failed: "Update check failed: {error}"
+
+gui:
+  common:
+    close:
+      name: "&cClose"
+    back:
+      name: "&eBack"
+    back-hub:
+      name: "&eBack to main menu"
+    prev:
+      name: "&ePrevious page"
+    next:
+      name: "&eNext page"
+    loading:
+      name: "&7Loading…"
+
+  hub:
+    title: "&8AetherMart"
+    shop:
+      name: "&aSystem Shop"
+      lore:
+        - "&7Buy items from the server"
+        - "&7{count} categories"
+        - ""
+        - "&eLeft-click to open"
+    settings:
+      name: "&bPersonal Settings"
+      lore:
+        - "&7Discord notices, link and penalty status"
+        - ""
+        - "&eLeft-click to open"
+    auction:
+      name: "&6Player Auctions"
+      lore:
+        - "&7Buy and sell between players"
+        - "&7Active auctions: {count}"
+        - "&7Claim box: {claims}"
+        - ""
+        - "&eLeft-click to open"
+
+  settings:
+    title: "&8Personal Settings"
+    "on": "&aOn"
+    "off": "&cOff"
+    status:
+      name: "&f{player}"
+      lore:
+        - "&7Discord: {link}"
+        - "&7Trading: {penalty}"
+        - "&7Debt: {debt}"
+        - ""
+        - "&8Default notices can't be turned off"
+    link:
+      disabled: "&7DM notices are disabled on this server"
+      unavailable: "&cCan't read the link right now"
+      linked: "&aLinked"
+      not-linked: "&eNot linked (/dclink link)"
+    penalty:
+      none: "&aNormal"
+      banned: "&cBanned until {until}"
+    notify:
+      purchase:
+        name: "&fPurchase notices"
+        lore: ["&7Status: {state}", "", "&eLeft-click to toggle"]
+      won:
+        name: "&fWon auction notices"
+        lore: ["&7Status: {state}", "", "&eLeft-click to toggle"]
+      sold:
+        name: "&fSold notices"
+        lore: ["&7Status: {state}", "", "&eLeft-click to toggle"]
+      listed:
+        name: "&fListing confirmations"
+        lore: ["&7Status: {state}", "", "&eLeft-click to toggle"]
+      removed:
+        name: "&fRemoval notices"
+        lore: ["&7Status: {state}", "", "&eLeft-click to toggle"]
+      expired:
+        name: "&fExpired notices"
+        lore: ["&7Status: {state}", "", "&eLeft-click to toggle"]
+      outbid:
+        name: "&fOutbid notices"
+        lore: ["&7Status: {state}", "", "&eLeft-click to toggle"]
+
+  shop:
+    categories:
+      title: "&8System Shop"
+      entry:
+        lore:
+          - "&7{count} products"
+          - ""
+          - "&eLeft-click to view"
+      empty:
+        name: "&7No products yet"
+    products:
+      title: "&8System Shop - {category}"
+      price:
+        - ""
+        - "&7Price: &e{price} &7/ {unit} pcs"
+        - "&7Currency: &f{currency}"
+      promo:
+        - "&cOn sale! &7Was &m{original}&r"
+        - "&7Sale ends {ends}"
+      limit:
+        - "&7Limit: {period} {limit} pcs ({left} left)"
+      paused:
+        - ""
+        - "&cThis currency is paused"
+      click:
+        - ""
+        - "&eLeft-click to buy"
+      empty:
+        name: "&7No products in this category"
+    quantity:
+      title: "&8Choose quantity"
+      info:
+        - ""
+        - "&7Buying: &f{portions} portions ({items} pcs)"
+        - "&7Unit price: &e{unit}"
+        - "&7Subtotal: &e{subtotal}"
+        - "&7Tax ({percent}%): &e{tax}"
+        - "&7Total: &6{total}"
+        - "&7Balance: &f{balance}"
+      option:
+        name: "&f×{portions}"
+        lore:
+          - "&7{items} pcs"
+          - "&eLeft-click to select"
+      custom:
+        name: "&fCustom amount"
+        lore:
+          - "&7Type the number of portions in chat"
+      confirm:
+        name: "&aConfirm purchase"
+        lore:
+          - "&7{item} x{items}"
+          - "&7Total: &6{total}"
+
+  auction:
+    no-bidder: "None"
+    filter:
+      all: "All"
+    sort:
+      newest: "Newest"
+      ending: "Ending soon"
+      price_asc: "Price: low to high"
+      price_desc: "Price: high to low"
+    status:
+      active: "&7{time} left"
+      knocking: "&6Knocking: {n} of {count}, next in {time}"
+      settling: "&eSettling"
+    entry:
+      fixed:
+        - ""
+        - "&8Auction #A-{id}"
+        - "&7Seller: &f{seller}"
+        - "&7Contents: {slots} slots, {count} items"
+        - "&7Buy now: &e{price}"
+        - "&7Currency: &f{currency} (buyer pays {tax}% tax)"
+        - "{status}"
+      bid:
+        - ""
+        - "&8Auction #A-{id}"
+        - "&7Seller: &f{seller}"
+        - "&7Contents: {slots} slots, {count} items"
+        - "&7Current bid: &e{price} &7(start {start})"
+        - "&7Highest bidder: &f{bidder} ({bids} bids)"
+        - "&7Currency: &f{currency} (buyer pays {tax}% tax)"
+        - "{status}"
+      own:
+        - "&bThis is your auction"
+      leading:
+        - "&aYou are winning"
+      outbid:
+        - "&cYou have been outbid"
+      click:
+        - ""
+        - "&eLeft-click to view"
+    home:
+      title: "&8Player Auctions"
+      state-open: "&aOpen"
+      state-paused: "&cClosed"
+      history:
+        name: "&fMy trade history"
+        lore: ["&7Recent purchases, sales and bids"]
+      browse:
+        name: "&6Auction market"
+        lore: ["&7Active: {count}", "&7Status: {state}", "", "&eLeft-click to open"]
+      create:
+        name: "&aCreate auction"
+        lore: ["&7Add items, set price and duration", "&7Listings: {used} / {limit}", "", "&eLeft-click to open"]
+      mine:
+        name: "&bMy listings"
+        lore: ["&7Listed: {count}", "&7Bidding on: {bidding}", "", "&eLeft-click to open"]
+      claims:
+        name: "&dClaim box"
+        lore: ["&7Waiting: {count}", "", "&eLeft-click to open"]
+    browser:
+      title: "&8Auction market"
+      empty:
+        name: "&7No matching auctions"
+      sort:
+        name: "&fSort: &e{value}"
+        lore: ["&eLeft-click to change"]
+      mode:
+        name: "&fMode: &e{value}"
+        lore: ["&eLeft-click to change"]
+      currency:
+        name: "&fCurrency: &e{value}"
+        lore: ["&eLeft-click to change"]
+      search:
+        name: "&fSearch"
+        lore: ["&7Search by item name or seller", "&eLeft-click to type"]
+      search-active:
+        name: "&fSearch: &e{value}"
+        lore: ["&eLeft-click to clear"]
+      mine:
+        name: "&bMy listings"
+      claims:
+        name: "&dClaim box ({count})"
+    mine:
+      title: "&8My listings and bids"
+      empty:
+        name: "&7You have no listings or active bids"
+    preview:
+      title: "&8Auction #A-{id}"
+      info-fixed:
+        name: "&eAuction #A-{id} (buy now)"
+        lore:
+          - "&7Seller: &f{seller}"
+          - "&7Contents: {slots} slots, {count} items"
+          - "&7Price: &e{price}"
+          - "&7Currency: &f{currency} (buyer pays {tax}% tax)"
+          - "{status}"
+      info-bid:
+        name: "&6Auction #A-{id} (bidding)"
+        lore:
+          - "&7Seller: &f{seller}"
+          - "&7Contents: {slots} slots, {count} items"
+          - "&7Starting price: &f{start}"
+          - "&7Highest bid: &e{price} ({bidder})"
+          - "&7Next minimum bid: &e{min}"
+          - "&7Currency: &f{currency} (buyer pays {tax}% tax)"
+          - "{status}"
+          - ""
+          - "&8Bids only check your balance; you pay when the hammer falls"
+      buy:
+        name: "&aBuy"
+        lore: ["&7Price {price}, plus {tax}% tax", "", "&eLeft-click to buy"]
+      bid:
+        name: "&6Bid"
+        lore: ["&7Minimum {min}, plus {tax}% tax", "", "&eLeft-click to enter a bid"]
+      settling:
+        name: "&eSettling"
+      cancel:
+        name: "&eRemove listing"
+        lore: ["&7The items go back to your claim box", "", "&eLeft-click to remove"]
+      cancel-confirm:
+        name: "&cClick again to confirm"
+      cannot-cancel:
+        name: "&7Can't remove"
+        lore: ["&7The auction has bids or is being knocked down"]
+      force:
+        name: "&cForce remove"
+        lore: ["&7Items go back to the seller's claim box", "&7No bidder is charged", "", "&eLeft-click"]
+      force-confirm:
+        name: "&4Click again to confirm force removal"
+    confirm-buy:
+      title: "&8Confirm purchase #A-{id}"
+      confirm:
+        name: "&aConfirm purchase"
+        lore: ["&7Price: {price}", "&7Tax: {taxamount}", "&7Total: &6{total}"]
+      cancel:
+        name: "&cCancel"
+    create:
+      title: "&8Create auction (add the items to sell)"
+      unset: "Not set"
+      cancel:
+        name: "&cCancel"
+        lore: ["&7Items go back to your inventory"]
+      mode:
+        name: "&fMode: &e{mode}"
+        lore: ["&7Buy now: the first buyer to pay gets it", "&7Auction: after the end time, one knock every {knock} min; sold on knock {knocks}", "", "&eLeft-click to change"]
+      currency:
+        name: "&fCurrency: &e{currency}"
+        lore: ["&eLeft-click to change"]
+      price:
+        name: "&fPrice: &e{price}"
+        lore: ["&7Minimum {min}", "&7The buyer pays {tax}% tax on top; you get the full price", "", "&eLeft-click to enter"]
+      start:
+        name: "&fStarting price: &e{price}"
+        lore: ["&7Minimum {min}", "&7The buyer pays {tax}% tax on top; you get the full winning bid", "", "&eLeft-click to enter"]
+      duration:
+        name: "&fDuration: &e{duration}"
+        lore: ["&eLeft-click to enter (for example 12h, 2d)"]
+      info:
+        name: "&fHow it works"
+        lore:
+          - "&7Put the items to sell in the top 3 rows (left-click only)"
+          - "&7Everything is sold together; create separate listings to sell separately"
+          - "&7Listings: {used} / {limit}"
+      confirm:
+        name: "&aConfirm listing"
+        lore: ["&7{mode} | {price} | {duration}"]
+
+  claims:
+    title: "&8Claim box"
+    empty:
+      name: "&7Your claim box is empty"
+    all:
+      name: "&aClaim all"
+      lore: ["&7{count} entries"]
+    money:
+      name: "&6{amount}"
+      lore: ["&7Source: {source}", "&7Time: {time}", "", "&eLeft-click to claim"]
+    items:
+      lore:
+        - ""
+        - "&7Source: {source}"
+        - "&7{slots} slots, {count} items"
+        - "&8{summary}"
+        - "&7Time: {time}"
+        - ""
+        - "&eLeft-click to claim"
+
+  history:
+    title: "&8My trade history"
+    empty:
+      name: "&7No records"
+    entry:
+      name: "&f{type}"
+      lore:
+        - "&7Time: {time}"
+        - "&7{actor} → {other}"
+        - "&7Amount: &e{amount}"
+        - "&7Auction: {auction}"
+        - "&8{items}"
+        - "&8Statement: {receipt}"
+
+  log:
+    title: "&8Trade log (admin)"
+    filter:
+      name: "&fType: &e{value}"
+      lore: ["&eLeft-click to change"]
+    search:
+      name: "&fSearch by player"
+      lore: ["&eLeft-click to enter a player name"]
+    search-active:
+      name: "&fPlayer: &e{value}"
+      lore: ["&eLeft-click to clear"]
+
+  admin:
+    common:
+      cancel:
+        name: "&cCancel (don't save)"
+      save:
+        name: "&aSave"
+      move-up:
+        name: "&fMove up"
+      move-down:
+        name: "&fMove down"
+    home:
+      title: "&8AetherMart Admin"
+      shop:
+        name: "&aShop management"
+        lore: ["&7Categories, add / edit / remove products, promotions"]
+      shop-locked:
+        name: "&7Shop management (no permission)"
+      auction:
+        name: "&6Auction management"
+        lore: ["&7Force remove, close market, banned items, penalties"]
+      auction-locked:
+        name: "&7Auction management (no permission)"
+      log:
+        name: "&bTrade log"
+        lore: ["&7All trades, searchable by player and type"]
+      log-locked:
+        name: "&7Trade log (no permission)"
+    categories:
+      title: "&8Shop management - Categories"
+      entry:
+        lore: ["&7{count} products", "&8ID: {id}", "", "&eLeft-click to edit"]
+      add:
+        name: "&aAdd category"
+        lore: ["&eLeft-click to enter a name"]
+    category:
+      title: "&8Category settings"
+      rename:
+        name: "&fRename"
+        lore: ["&7Current: {name}", "&eLeft-click to enter"]
+      icon:
+        name: "&fChange icon"
+        lore: ["&7Left-click, then click an item in your inventory"]
+      icon-picking:
+        name: "&aClick an item in your inventory"
+        lore: ["&7Click again to cancel"]
+      products:
+        name: "&fProducts"
+        lore: ["&7{count} products", "&eLeft-click to manage"]
+      delete:
+        name: "&cDelete category"
+        lore: ["&7Its {count} products are deleted too", "&eLeft-click (twice)"]
+      delete-confirm:
+        name: "&4Click again to confirm deletion"
+    products:
+      title: "&8Products - {category}"
+      entry:
+        - ""
+        - "&7Price: &e{price} &7/ {unit} pcs"
+        - "&7Currency: {currency}"
+        - "&7Limit: {limit}"
+        - "&7Scheduled promotions: {promos}"
+        - ""
+        - "&eLeft-click to edit"
+      help:
+        name: "&fHow it works"
+        lore: ["&7Click an item in your inventory to add it", "&7A copy is made (amount 1, full NBT kept)", "&7The item in your inventory is not taken"]
+    product:
+      title: "&8Product settings"
+      title-new: "&8New product"
+      preview:
+        - ""
+        - "&7Price: &e{price} &7/ {unit} pcs"
+        - "&7Currency: {currency}"
+        - "&7Limit: {period} {limit}"
+        - "&7Promotions: {promos}"
+      price:
+        name: "&fPrice: &e{price}"
+        lore: ["&7Minimum {min}", "&eLeft-click to enter"]
+      currency:
+        name: "&fCurrency: &e{currency}"
+        lore: ["&eLeft-click to change"]
+      unit:
+        name: "&fPer purchase: &e{unit} pcs"
+        lore: ["&eLeft-click to enter"]
+      period:
+        name: "&fLimit period: &e{period}"
+        lore: ["&7Unlimited / Daily / Weekly / Total", "&eLeft-click to change"]
+      limit:
+        name: "&fLimit per player: &e{limit} pcs"
+        lore: ["&70 = unlimited", "&eLeft-click to enter"]
+      promotions:
+        name: "&fScheduled promotions ({promos})"
+        lore: ["&eLeft-click to manage"]
+      delete:
+        name: "&cRemove this product"
+        lore: ["&eLeft-click (twice)"]
+      delete-confirm:
+        name: "&4Click again to confirm removal"
+    promotions:
+      title: "&8Scheduled promotions"
+      active: "&aActive"
+      upcoming: "&eUpcoming"
+      ended: "&7Ended"
+      percent: "{percent}% off"
+      fixed: "Sale price {price}"
+      entry:
+        name: "{state} &f{discount}"
+        lore: ["&7{start} to {end}", "", "&eLeft-click to delete (twice)"]
+      entry-confirm:
+        name: "&4Click again to confirm deletion"
+        lore: ["&7{start} to {end}"]
+      add:
+        name: "&aAdd promotion"
+        lore: ["&7Enter the start time, end time and discount in turn"]
+      help:
+        name: "&fHow it works"
+        lore: ["&7Periods can't overlap", "&7The sale price can't be below the minimum price", "&7Press Save on the product page to apply"]
+    auctions:
+      title: "&8Auction management"
+      entry:
+        - ""
+        - "&8Auction #A-{id} ({phase})"
+        - "&7Seller: {seller}"
+        - "&7{count} items, {bids} bids"
+        - ""
+        - "&eLeft-click to preview"
+      banned:
+        name: "&fBanned items ({count})"
+        lore: ["&eLeft-click to manage"]
+      penalties:
+        name: "&fPenalties"
+        lore: ["&eLeft-click to view"]
+      pause:
+        name: "&aMarket open"
+        lore: ["&eLeft-click to close (no listing, buying or bidding)"]
+      resume:
+        name: "&cMarket closed"
+        lore: ["&eLeft-click to open"]
+    banned:
+      title: "&8Banned items"
+      entry:
+        - ""
+        - "&eLeft-click to remove (twice)"
+      entry-confirm:
+        - ""
+        - "&4Click again to confirm removal"
+      help:
+        name: "&fHow it works"
+        lore: ["&7Click an item in your inventory to add it", "&7Matched on full NBT (amount ignored)", "&7Items inside shulker boxes and bundles are checked too"]
+    penalties:
+      title: "&8Penalties"
+      expired: "Ban expired"
+      empty:
+        name: "&7No players are penalised"
+      entry:
+        name: "&f{player}"
+        lore: ["&7Banned until: {until}", "&7Debt: {debt}", "&8{reason}", "", "&eLeft-click to lift (twice)"]
+      entry-confirm:
+        name: "&4Click again to lift {player}"
+        lore: ["&7The debt is cleared too"]
+
+discord:
+  footer: "{server} · AetherMart"
+  dm:
+    shop-purchase:
+      title: "Purchase complete"
+      description: "You bought **{item} x{amount}** from the system shop for **{price}**.\nStatement: {receipt}"
+    auction-buy:
+      title: "Auction purchase complete"
+      description: "You bought {seller}'s auction #A-{id} for **{price}**.\nItems: {items}\nThe items are in your claim box. Statement: {receipt}"
+    won:
+      title: "You won the auction"
+      description: "You won {seller}'s auction #A-{id}; **{price}** was charged.\nItems: {items}\nThe items are in your claim box. Statement: {receipt}"
+    sold:
+      title: "Auction sold"
+      description: "Your auction #A-{id} was bought by {buyer}; you received **{price}**.\nItems: {items}\nStatement: {receipt}"
+    listed:
+      title: "Listing confirmed"
+      description: "Auction #A-{id} ({mode}) is listed at **{price}**, ending {ends}.\nItems: {items}\nStatement: {receipt}"
+    cancelled:
+      title: "Listing removed"
+      description: "You removed auction #A-{id}; the items are back in your claim box.\nItems: {items}\nStatement: {receipt}"
+    force-removed:
+      title: "Auction removed by an admin"
+      description: "Your auction #A-{id} was removed by admin {admin}; the items are back in your claim box.\nItems: {items}\nStatement: {receipt}"
+    expired:
+      title: "Auction ended without a sale"
+      description: "Your auction #A-{id} didn't sell; the items are back in your claim box.\nItems: {items}\nStatement: {receipt}"
+    outbid:
+      title: "You were outbid"
+      description: "Your bid on auction #A-{id} was outbid. Highest is now **{price}**; the next minimum bid is {min}.\nItems: {items}"
+    penalty:
+      title: "Unpaid winning bid (default)"
+      description: "When auction #A-{id} closed, your balance couldn't cover {price}.\nFine **{fine}**, debt **{debt}**, banned from trading until {until}.\nStatement: {receipt}"
+    combined:
+      title: "Trade notices ({count})"
+      description: "Peak trading hours: notices for {player} were combined:\n{lines}"
+      line: "• {title}"
+  admin:
+    shop-purchase:
+      title: "System shop purchase"
+      description: "{player} bought {item} x{amount} for {price}"
+    sale:
+      title: "Auction sale"
+      description: "#A-{id} ({mode}) {seller} → {buyer}, sold for {price}, tax {tax}\nItems: {items}"
+    force-removed:
+      title: "Force removed"
+      description: "{admin} removed {seller}'s auction #A-{id}\nItems: {items}"
+    penalty:
+      title: "Unpaid winning bid"
+      description: "{player} didn't pay for auction #A-{id} ({price}). Fine {fine}, debt {debt}, banned until {until}"
+    paused:
+      title: "Auction market closed"
+      description: "{admin} closed the auction market"
+    resumed:
+      title: "Auction market opened"
+      description: "{admin} opened the auction market"
+    combined:
+      title: "Trade log ({count} entries)"
+      description: "{lines}"
+  daily:
+    report:
+      title: "Daily summary"
+      description: "Period: {period}\nSales: {count}, players: {players}\n{lines}"
+    empty:
+      title: "Daily summary"
+      description: "Period: {period}\nThere were no trades in this period."
+    line: "• {currency}: sales {total}, tax {tax} ({count})"

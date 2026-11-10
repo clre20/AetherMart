@@ -1,0 +1,59 @@
+name: AetherMart
+description: ${project.description}
+prefix: AetherMart
+version: '${project.version}'
+main: clre20.aetherMart.AetherMart
+api-version: '1.21'
+load: POSTWORLD
+authors: [ Clre20 ]
+website: https://github.com/clre20/AetherMart
+depend: [ Vault ]
+softdepend: [ ExcellentEconomy, DiscordLink ]
+
+commands:
+  aethermart:
+    description: Open AetherMart (system shop and auction house)
+    usage: /<command> [help|version|reload|admin]
+    aliases: [ mart ]
+
+permissions:
+  aethermart.use:
+    description: Open AetherMart and use the shop and auction house
+    default: true
+  aethermart.help:
+    description: /aethermart help
+    default: true
+  aethermart.auction.sell:
+    description: Create auction listings
+    default: true
+  aethermart.version:
+    description: /aethermart version and join reminder for new versions
+    default: op
+  aethermart.reload:
+    description: /aethermart reload
+    default: op
+  aethermart.admin.use:
+    description: Open the admin menu
+    default: op
+  aethermart.admin.auction:
+    description: Manage auctions (force remove, pause, banned items, penalties)
+    default: op
+  aethermart.admin.shop:
+    description: Manage the system shop
+    default: op
+  aethermart.admin.log:
+    description: View all trade records
+    default: op
+  aethermart.*:
+    description: All AetherMart permissions
+    default: op
+    children:
+      aethermart.use: true
+      aethermart.help: true
+      aethermart.auction.sell: true
+      aethermart.version: true
+      aethermart.reload: true
+      aethermart.admin.use: true
+      aethermart.admin.auction: true
+      aethermart.admin.shop: true
+      aethermart.admin.log: true

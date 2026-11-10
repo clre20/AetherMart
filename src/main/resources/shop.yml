@@ -1,0 +1,22 @@
+# AetherMart 系統商店設定
+# 商品與分類在遊戲內用 /mart admin shop 管理（存在 data/shop-items.yml）
+shop-version: 1
+
+# 稅率（%），加在售價上由買家另外支付；鍵是 config.yml 的幣別 ID；0 = 不收
+tax:
+  money: 0
+  special: 0
+
+# 最低售價（含促銷價）；鍵是幣別 ID
+min-price:
+  money: 1
+  special: 1
+
+limit-reset:
+  # 每日購買上限的重置時間（依 config.yml 的時區）
+  daily-time: "00:00"
+  # 每週購買上限的重置日：MONDAY ～ SUNDAY
+  weekly-day: MONDAY
+
+# 數量頁的快速按鈕（購買份數）
+quantity-buttons: [1, 2, 4, 8, 16, 32]
