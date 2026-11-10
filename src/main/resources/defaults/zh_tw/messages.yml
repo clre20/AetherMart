@@ -12,6 +12,24 @@ common:
   bad-amount: "&c金額格式不對（正數，最多 {decimals} 位小數）。"
   unknown-player: "&c找不到玩家 {player}（需要曾進過伺服器）。"
 
+startup:
+  no-vault:
+    - "=============================================="
+    - "AetherMart 無法啟動：找不到 Vault。"
+    - "config.yml 的 currencies 有使用 Vault 的幣別（type: vault），需要以下兩個插件："
+    - "  1. Vault（https://github.com/MilkBowl/Vault/releases）"
+    - "  2. 一個支援 Vault 的經濟插件，例如 TheosisEconomy、EssentialsX"
+    - "放進 plugins/ 後重開伺服器即可。"
+    - "如果只想用 ExcellentEconomy，請把 currencies 裡的幣別都改成 type: excellenteconomy。"
+    - "=============================================="
+  currency-no-vault: "幣別「{currency}」（{id}）無法使用：沒有安裝 Vault，用這個幣定價的商品與拍賣會暫停。"
+  currency-no-economy:
+    - "幣別「{currency}」（{id}）無法使用：已安裝 Vault，但沒有經濟插件向 Vault 註冊。"
+    - "請安裝支援 Vault 的經濟插件（例如 TheosisEconomy、EssentialsX）；在那之前用這個幣定價的商品與拍賣會暫停。"
+  currency-no-excellent:
+    - "幣別「{currency}」（{id}）無法使用：找不到 ExcellentEconomy，或 config.yml 填的貨幣 ID 不存在。"
+    - "請確認已安裝 ExcellentEconomy，並檢查 currencies.{id}.id 是否和 ExcellentEconomy 的貨幣 ID 相同；在那之前相關交易會暫停。"
+
 time:
   day: "天"
   hour: "小時"

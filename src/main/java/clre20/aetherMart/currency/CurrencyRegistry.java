@@ -22,7 +22,8 @@ public final class CurrencyRegistry {
 
     public void load(MainConfig config) {
         currencies.clear();
-        VaultProvider vault = new VaultProvider();
+        // 沒裝 Vault 時不能載入 VaultProvider（會碰到 Vault 的類別），改用 MissingProvider
+        CurrencyProvider vault = vaultInstalled() ? new VaultProvider() : new MissingProvider();
         for (MainConfig.CurrencyDef d : config.currencies.values()) {
             CurrencyProvider p;
             if (d.type().equals("excellenteconomy")) {
@@ -86,10 +87,26 @@ public final class CurrencyRegistry {
         }
     }
 
-    public void checkAll() {
+    public static boolean vaultInstalled() {
+        return org.bukkit.Bukkit.getPluginManager().getPlugin("Vault") != null;
+    }
+
+    /** 啟動後檢查各幣別；無法使用的幣別在後台說明原因與解法（文字在 messages.yml）。 */
+    public void checkAll(clre20.aetherMart.config.Messages messages) {
         for (Currency c : currencies.values()) {
-            if (!c.available()) {
-                logger.warning("Currency '" + c.id() + "' is not available right now; items priced in it are paused");
+            if (c.available()) {
+                continue;
+            }
+            String key;
+            if (c.provider() instanceof MissingProvider) {
+                key = "startup.currency-no-vault";
+            } else if (c.provider() instanceof VaultProvider) {
+                key = "startup.currency-no-economy";
+            } else {
+                key = "startup.currency-no-excellent";
+            }
+            for (String line : messages.list(key)) {
+                logger.warning(clre20.aetherMart.util.Texts.plain(line, clre20.aetherMart.util.Vars.of("currency", c.name(), "id", c.id())));
             }
         }
     }

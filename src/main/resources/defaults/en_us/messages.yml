@@ -12,6 +12,24 @@ common:
   bad-amount: "&cInvalid amount (positive number, up to {decimals} decimal places)."
   unknown-player: "&cPlayer {player} not found (they must have joined the server before)."
 
+startup:
+  no-vault:
+    - "=============================================="
+    - "AetherMart cannot start: Vault is not installed."
+    - "A currency in config.yml uses Vault (type: vault), which needs two plugins:"
+    - "  1. Vault (https://github.com/MilkBowl/Vault/releases)"
+    - "  2. An economy plugin that supports Vault, such as TheosisEconomy or EssentialsX"
+    - "Put them in plugins/ and restart the server."
+    - "To use only ExcellentEconomy, set every currency in currencies to type: excellenteconomy."
+    - "=============================================="
+  currency-no-vault: "Currency \"{currency}\" ({id}) is unavailable: Vault is not installed. Products and auctions priced in it are paused."
+  currency-no-economy:
+    - "Currency \"{currency}\" ({id}) is unavailable: Vault is installed, but no economy plugin is registered with it."
+    - "Install an economy plugin that supports Vault (such as TheosisEconomy or EssentialsX). Until then, products and auctions priced in it are paused."
+  currency-no-excellent:
+    - "Currency \"{currency}\" ({id}) is unavailable: ExcellentEconomy is missing, or the currency ID in config.yml does not exist."
+    - "Check that ExcellentEconomy is installed and that currencies.{id}.id matches an ExcellentEconomy currency ID. Until then, related trades are paused."
+
 time:
   day: "d"
   hour: "h"

@@ -8,6 +8,7 @@ import clre20.aetherMart.config.MarketConfig;
 import clre20.aetherMart.config.Messages;
 import clre20.aetherMart.config.PdfConfig;
 import clre20.aetherMart.currency.CurrencyRegistry;
+import clre20.aetherMart.util.Texts;
 import clre20.aetherMart.data.Database;
 import clre20.aetherMart.data.MetaStore;
 import clre20.aetherMart.data.TradeStore;
@@ -85,6 +86,13 @@ public final class AetherMart extends JavaPlugin {
         });
         try {
             loadConfigs();
+            if (needsVault() && !CurrencyRegistry.vaultInstalled()) {
+                for (String line : messages.list("startup.no-vault")) {
+                    getLogger().severe(Texts.plain(line, java.util.Map.of()));
+                }
+                Bukkit.getPluginManager().disablePlugin(this);
+                return;
+            }
             activity = new ActivityLog(getDataFolder(), getLogger());
             activity.configure(config.zone, config.logMaxFileBytes, config.logRetentionDays, config.logMaxTotalBytes);
             activity.start();
@@ -144,7 +152,7 @@ public final class AetherMart extends JavaPlugin {
         links.start();
         daily.start();
         Bukkit.getScheduler().runTaskTimer(this, this::tickMenus, 20L, 20L);
-        Bukkit.getScheduler().runTaskLater(this, currencies::checkAll, 40L);
+        Bukkit.getScheduler().runTaskLater(this, () -> currencies.checkAll(messages), 40L);
 
         for (Player p : Bukkit.getOnlinePlayers()) {
             PlayerListener.loadPlayer(this, p, false);
@@ -168,6 +176,16 @@ public final class AetherMart extends JavaPlugin {
         activity.log("SYSTEM", "AetherMart " + getPluginMeta().getVersion() + " enabled");
     }
 
+    /** config.yml 裡有沒有走 Vault 的幣別（type 不是 excellenteconomy 的都走 Vault）。 */
+    private boolean needsVault() {
+        for (MainConfig.CurrencyDef d : config.currencies.values()) {
+            if (!d.type().equals("excellenteconomy")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void loadConfigs() {
         config.load(this);
         messages.load(this, config.language, config.prefix);
@@ -189,7 +207,7 @@ public final class AetherMart extends JavaPlugin {
             }, 100L);
         }
         bot.apply(config.token);
-        currencies.checkAll();
+        currencies.checkAll(messages);
     }
 
     private void tickMenus() {
