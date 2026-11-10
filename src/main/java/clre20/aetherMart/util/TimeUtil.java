@@ -63,6 +63,80 @@ public final class TimeUtil {
         }
     }
 
+    private static final Pattern FLEX_DATE = Pattern.compile(
+            "(?:(\\d{4})[-/.])?(\\d{1,2})[-/.](\\d{1,2})(?:\\s+(\\d{1,2}):(\\d{2}))?");
+    private static final Pattern FLEX_TIME = Pattern.compile("(\\d{1,2}):(\\d{2})");
+
+    /**
+     * 寬鬆的日期時間輸入，例如 2026-11-01 20:00、2026/11/1、11/1 20:00、11/1、11月1日、20:00、現在。
+     * 全形數字與符號會先轉成半形。沒寫年份 = 今年（已經過去超過一天就算明年）；只寫時間 = 今天。
+     * 只寫日期時，endOfDay = true 取 23:59（結束時間「到 11/1」包含當天），否則取 00:00。
+     * 格式錯誤回傳 -1。
+     */
+    public static long parseFlexible(String input, ZoneId zone, long now, boolean endOfDay) {
+        if (input == null) {
+            return -1;
+        }
+        String s = java.text.Normalizer.normalize(input, java.text.Normalizer.Form.NFKC).trim()
+                .replace("年", "/").replace("月", "/").replace("日", "").replace("號", "").replace("号", "")
+                .replaceAll("\\s+", " ");
+        if (s.isEmpty() || s.length() > 24) {
+            return -1;
+        }
+        String lower = s.toLowerCase(Locale.ROOT);
+        if (lower.equals("now") || s.equals("現在") || s.equals("现在")) {
+            return now - now % 60_000L;
+        }
+        LocalDateTime today = LocalDateTime.ofInstant(Instant.ofEpochMilli(now), zone);
+        try {
+            Matcher t = FLEX_TIME.matcher(s);
+            if (t.matches()) {
+                return today.toLocalDate().atTime(Integer.parseInt(t.group(1)), Integer.parseInt(t.group(2)))
+                        .atZone(zone).toInstant().toEpochMilli();
+            }
+            Matcher m = FLEX_DATE.matcher(s);
+            if (!m.matches()) {
+                return -1;
+            }
+            boolean hasYear = m.group(1) != null;
+            int year = hasYear ? Integer.parseInt(m.group(1)) : today.getYear();
+            int month = Integer.parseInt(m.group(2));
+            int day = Integer.parseInt(m.group(3));
+            int hour = endOfDay ? 23 : 0;
+            int minute = endOfDay ? 59 : 0;
+            if (m.group(4) != null) {
+                hour = Integer.parseInt(m.group(4));
+                minute = Integer.parseInt(m.group(5));
+            }
+            LocalDateTime dt = LocalDateTime.of(year, month, day, hour, minute);
+            if (!hasYear && dt.isBefore(today.minusDays(1))) {
+                dt = dt.plusYears(1);
+            }
+            return dt.atZone(zone).toInstant().toEpochMilli();
+        } catch (java.time.DateTimeException | NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    /** 短的時間長度文字，例如 6小時、3天、1天 12小時。 */
+    public static String formatShort(long millis, String day, String hour, String minute) {
+        long minutes = Math.max(0, millis / 60_000L);
+        long d = minutes / 1440;
+        long h = minutes % 1440 / 60;
+        long m = minutes % 60;
+        StringBuilder sb = new StringBuilder();
+        if (d > 0) {
+            sb.append(d).append(day).append(' ');
+        }
+        if (h > 0) {
+            sb.append(h).append(hour).append(' ');
+        }
+        if (m > 0 || sb.length() == 0) {
+            sb.append(m).append(minute);
+        }
+        return sb.toString().trim();
+    }
+
     public static String format(long epochMillis, ZoneId zone, DateTimeFormatter f) {
         return ZonedDateTime.ofInstant(Instant.ofEpochMilli(epochMillis), zone).format(f);
     }
@@ -91,7 +165,6 @@ public final class TimeUtil {
         return sb.toString().trim();
     }
 
-    /** 解析 HH:mm；錯誤時回傳 null。 */
     /**
      * 讀取「HH:mm」設定值。YAML 1.1 會把沒加引號的 15:30 讀成 60 進位整數 930，這裡一併轉回時與分。
      */

@@ -10,7 +10,7 @@ AetherMart 是一個 Paper 伺服器用的綜合商店插件：系統商店與�
   - **分類與商品**：管理員在遊戲內點自己背包的物品就能上架，完整保留 NBT，背包裡的物品不會被拿走。
   - **多幣別定價**：每個商品可選預設幣或特殊幣定價。
   - **購買上限**：每個商品可設定每日／每週／累計／不限的每人上限，重置時間可設定。
-  - **促銷排程**：預先排定促銷時段，可打折（%）或直接設定促銷價，時段不可重疊。
+  - **促銷排程**：在箱子介面新增促銷，開始時間預設「現在」，結束時間一鍵選 1 小時～30 天，也可輸入 `11/1`、`11/1 20:00` 或 `3d` 這類簡短格式；可打折（%）或直接設定促銷價，時段不可重疊。
   - **稅率與最低售價**：在 `shop.yml` 依幣別分開設定，稅由買家另付。
 - **玩家拍賣**
   - **整包拍賣**：每筆拍賣是一個 27 格的小箱子空間，整包一起賣。
@@ -33,7 +33,7 @@ AetherMart 是一個 Paper 伺服器用的綜合商店插件：系統商店與�
   - 每日彙整 PDF 本機保存 90 天（可設定），過期自動刪除。
 - **全方位紀錄**：所有交易、管理操作、Discord 傳送結果都寫入 `logs/` 下的 .log，依天數或大小自動壓縮，並依保留天數與總大小清理。
 - **多語言**：`config.yml` 的 `language` 可選 `zh_tw`、`zh_cn`、`en_us`；換語言後重載，舊的 `messages.yml`、`pdf.yml` 會自動備份並以新語言重建。
-- **設定檔自動補齊**：啟動與重載時自動補上缺少的項目，保留你原本的值與註解。
+- **設定檔自動補齊**：啟動與重載時自動補上缺少的項目，保留你原本的值與註解；改版時，你沒改過的訊息會自動換成新版文字。
 - **介面簽署**：所有介面都使用自訂 `InventoryHolder`（`getPlugin()`、`getMenuId()`）並在物品寫入 PDC `aethermart:gui`，方便其他插件（例如 Item-lock）辨識。
 - **檢查更新**：啟動時非同步檢查 GitHub Releases，結果快取 10 分鐘，有權限的管理員登入 3 秒後收到提醒。
 
@@ -42,6 +42,8 @@ AetherMart 是一個 Paper 伺服器用的綜合商店插件：系統商店與�
 | 指令 | 說明 | 執行者 | 權限節點 | 預設 |
 | --- | --- | --- | --- | --- |
 | `/aethermart`（別名 `/mart`） | 打開分流介面（系統商店、玩家拍賣、個人設定） | 玩家 | `aethermart.use` | 所有人 |
+| `/mart shop` | 直接打開系統商店 | 玩家 | `aethermart.use` | 所有人 |
+| `/mart auction` | 直接打開玩家拍賣 | 玩家 | `aethermart.use` | 所有人 |
 | `/mart help` | 顯示說明（只列出有權限的指令） | 玩家／後台 | `aethermart.help` | 所有人 |
 | `/mart version` | 顯示版本並檢查更新 | 玩家／後台 | `aethermart.version` | OP |
 | `/mart reload` | 重新載入並補齊所有設定檔 | 玩家／後台 | `aethermart.reload` | OP |
@@ -58,10 +60,10 @@ AetherMart 是一個 Paper 伺服器用的綜合商店插件：系統商店與�
 ### 1. 安裝
 
 ```bash
-# 需求：Paper 1.21.x ～ 26.x、Java 21+、Vault 與一個經濟插件
+# 需求：Paper 1.21.x ～ 26.x、Java 21+、Vault 與一個經濟插件（缺少時後台會說明缺什麼）
 # 選用：ExcellentEconomy（特殊幣）、DiscordLink（Discord 綁定）
 plugins/
-├── AetherMart-1.0.0.jar
+├── AetherMart-1.1.0.jar
 ├── Vault.jar
 └── TheosisEconomy.jar
 ```
@@ -142,7 +144,7 @@ Players only need `/mart`; everything else happens in the menus. Bedrock players
   - **Categories and products**: admins click an item in their own inventory to add it. The full NBT is kept and the item is not taken.
   - **Per-product currency**: price each product in the default currency or the special currency.
   - **Purchase limits**: daily, weekly, total or unlimited per player, with configurable reset times.
-  - **Scheduled promotions**: percentage discounts or fixed sale prices, with no overlapping periods.
+  - **Scheduled promotions**: a chest menu where the start defaults to now and the end is one click (1 hour to 30 days), or typed as `11/1`, `11/1 20:00` or `3d`. Percentage discounts or fixed sale prices, with no overlapping periods.
   - **Tax and minimum price** per currency in `shop.yml`. The buyer pays the tax on top.
 - **Player auctions**
   - **Bundle listings**: each listing is a 27-slot box sold as a whole.
@@ -165,7 +167,7 @@ Players only need `/mart`; everything else happens in the menus. Bedrock players
   - Daily summary PDFs are kept locally for 90 days (configurable).
 - **Full activity log** in `logs/`, compressed by day or size, with retention and size limits.
 - **Languages**: `zh_tw`, `zh_cn`, `en_us`. After switching and reloading, the old `messages.yml` and `pdf.yml` are backed up and rebuilt in the new language.
-- **Config auto-fill**: missing keys are added on start and reload; your values and comments are kept.
+- **Config auto-fill**: missing keys are added on start and reload; your values and comments are kept. On upgrades, messages you never edited are replaced with the new wording.
 - **Menu signature**: every menu uses a custom `InventoryHolder` (`getPlugin()`, `getMenuId()`), and menu items carry the PDC key `aethermart:gui`, so other plugins such as Item-lock can recognise them.
 - **Update checker**: an async GitHub Releases check on start, cached for 10 minutes, with a join reminder 3 seconds after login for permitted admins.
 
@@ -174,6 +176,8 @@ Players only need `/mart`; everything else happens in the menus. Bedrock players
 | Command | Description | Executor | Permission | Default |
 | --- | --- | --- | --- | --- |
 | `/aethermart` (alias `/mart`) | Open the main menu (shop, auctions, settings) | Player | `aethermart.use` | Everyone |
+| `/mart shop` | Open the system shop | Player | `aethermart.use` | Everyone |
+| `/mart auction` | Open player auctions | Player | `aethermart.use` | Everyone |
 | `/mart help` | Show help (only commands you can use) | Player / Console | `aethermart.help` | Everyone |
 | `/mart version` | Show the version and check for updates | Player / Console | `aethermart.version` | OP |
 | `/mart reload` | Reload and fill in all config files | Player / Console | `aethermart.reload` | OP |
@@ -193,7 +197,7 @@ Players only need `/mart`; everything else happens in the menus. Bedrock players
 # Requires Paper 1.21.x to 26.x, Java 21+, Vault and an economy plugin
 # Optional: ExcellentEconomy (special currency), DiscordLink (Discord links)
 plugins/
-├── AetherMart-1.0.0.jar
+├── AetherMart-1.1.0.jar
 ├── Vault.jar
 └── TheosisEconomy.jar
 ```

@@ -7,7 +7,9 @@ import clre20.aetherMart.gui.HubMenu;
 import clre20.aetherMart.gui.admin.AdminAuctionsMenu;
 import clre20.aetherMart.gui.admin.AdminCategoriesMenu;
 import clre20.aetherMart.gui.admin.AdminHomeMenu;
+import clre20.aetherMart.gui.auction.AuctionHomeMenu;
 import clre20.aetherMart.gui.auction.ClaimBoxMenu;
+import clre20.aetherMart.gui.shop.ShopCategoriesMenu;
 import clre20.aetherMart.gui.auction.HistoryMenu;
 import clre20.aetherMart.update.UpdateChecker;
 import clre20.aetherMart.util.Texts;
@@ -66,6 +68,26 @@ public final class MartCommand implements TabExecutor {
                     plugin.reload();
                     plugin.messages().send(sender, "command.reloaded");
                     plugin.activity().log("ADMIN", sender.getName() + " reloaded AetherMart");
+                }
+            }
+            case "shop" -> {
+                if (!perm(sender, "aethermart.use")) {
+                    return true;
+                }
+                if (sender instanceof Player p) {
+                    new ShopCategoriesMenu(plugin, p, 0).open();
+                } else {
+                    plugin.messages().send(sender, "command.player-only");
+                }
+            }
+            case "auction" -> {
+                if (!perm(sender, "aethermart.use")) {
+                    return true;
+                }
+                if (sender instanceof Player p) {
+                    new AuctionHomeMenu(plugin, p).open();
+                } else {
+                    plugin.messages().send(sender, "command.player-only");
                 }
             }
             case "claim" -> {
@@ -182,6 +204,8 @@ public final class MartCommand implements TabExecutor {
         plugin.messages().sendRaw(s, "command.help.header", Vars.of("version", plugin.getPluginMeta().getVersion()));
         String[][] rows = {
                 {"aethermart.use", "command.help.open"},
+                {"aethermart.use", "command.help.shop"},
+                {"aethermart.use", "command.help.auction"},
                 {"aethermart.help", "command.help.help"},
                 {"aethermart.version", "command.help.version"},
                 {"aethermart.reload", "command.help.reload"},
@@ -224,6 +248,8 @@ public final class MartCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
+            add(out, sender, "aethermart.use", "shop", args[0]);
+            add(out, sender, "aethermart.use", "auction", args[0]);
             add(out, sender, "aethermart.help", "help", args[0]);
             add(out, sender, "aethermart.version", "version", args[0]);
             add(out, sender, "aethermart.reload", "reload", args[0]);

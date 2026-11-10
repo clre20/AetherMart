@@ -1,0 +1,16 @@
+# AetherMart 1.0.x（messages-version 1）的舊預設文字。升級時，使用者檔案裡和這裡完全相同的項目會換成新版文字；改過的保留。
+admin:
+  promo:
+    added: '&a已加入促銷（回商品頁按儲存才生效）。'
+    bad-time: '&c時間格式：yyyy-MM-dd HH:mm，例如 2026-11-11 00:00。'
+    overlap: '&c和其他促銷時段重疊。'
+  input:
+    promo-start: '&e請輸入促銷開始時間（yyyy-MM-dd HH:mm，例如 {example}）：'
+    promo-end: '&e請輸入促銷結束時間（yyyy-MM-dd HH:mm）：'
+    promo-discount: '&e請輸入折扣：打折輸入 20%，或直接輸入促銷價：'
+gui:
+  admin:
+    promotions:
+      add:
+        lore:
+        - '&7依序輸入開始時間、結束時間、折扣'

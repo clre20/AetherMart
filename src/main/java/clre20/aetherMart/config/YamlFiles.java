@@ -104,9 +104,14 @@ public final class YamlFiles {
         }
 
         YamlConfiguration merged = loadDefaults(plugin, resource);
+        String versionKey = versionKey(defaults);
+        Set<String> stale = staleDefaults(plugin, resource, versionKey, defaults, user);
         boolean removed = false;
         for (String path : defaults.getKeys(true)) {
             if (defaults.isConfigurationSection(path) || isUnderFree(path, freeSections)) {
+                continue;
+            }
+            if (path.equals(versionKey) || stale.contains(path)) {
                 continue;
             }
             if (user.contains(path, true) && !user.isConfigurationSection(path)) {
@@ -137,6 +142,52 @@ public final class YamlFiles {
             write(plugin, file, result);
         }
         return merged;
+    }
+
+    /** 預設檔頂層以 -version 結尾的鍵，例如 messages-version。 */
+    private static String versionKey(YamlConfiguration defaults) {
+        for (String k : defaults.getKeys(false)) {
+            if (k.endsWith("-version") && defaults.isInt(k)) {
+                return k;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 版本升級時要換成新文字的項目：使用者的值和舊版預設（defaults/<語言>/old/<檔名>-<舊版本>.yml）完全相同，
+     * 代表沒改過，就改用新版預設；改過的照樣保留。
+     */
+    private static Set<String> staleDefaults(JavaPlugin plugin, String resource, String versionKey,
+                                             YamlConfiguration defaults, YamlConfiguration user) {
+        Set<String> out = new java.util.HashSet<>();
+        if (versionKey == null || !user.isInt(versionKey)) {
+            return out;
+        }
+        int from = user.getInt(versionKey);
+        int to = defaults.getInt(versionKey);
+        int slash = resource.lastIndexOf('/');
+        String dir = resource.substring(0, slash + 1);
+        String base = resource.substring(slash + 1).replaceFirst("\\.yml$", "");
+        for (int v = Math.max(1, from); v < to && v - from < 100; v++) {
+            String oldRes = dir + "old/" + base + "-" + v + ".yml";
+            try (InputStream in = plugin.getResource(oldRes)) {
+                if (in == null) {
+                    continue;
+                }
+                YamlConfiguration old = new YamlConfiguration();
+                old.load(new InputStreamReader(in, StandardCharsets.UTF_8));
+                for (String path : old.getKeys(true)) {
+                    if (!old.isConfigurationSection(path) && user.contains(path, true)
+                            && java.util.Objects.equals(old.get(path), user.get(path))) {
+                        out.add(path);
+                    }
+                }
+            } catch (IOException | InvalidConfigurationException e) {
+                plugin.getLogger().log(Level.WARNING, "Cannot read " + oldRes, e);
+            }
+        }
+        return out;
     }
 
     private static boolean isUnderFree(String path, Set<String> free) {

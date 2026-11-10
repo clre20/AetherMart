@@ -1,0 +1,16 @@
+# AetherMart 1.0.x（messages-version 1）的舊預設文字。升級時，使用者檔案裡和這裡完全相同的項目會換成新版文字；改過的保留。
+admin:
+  promo:
+    added: '&aPromotion added (press Save on the product page to apply it).'
+    bad-time: '&cTime format: yyyy-MM-dd HH:mm, for example 2026-11-11 00:00.'
+    overlap: '&cThis overlaps another promotion.'
+  input:
+    promo-start: '&eEnter the promotion start (yyyy-MM-dd HH:mm, for example {example}):'
+    promo-end: '&eEnter the promotion end (yyyy-MM-dd HH:mm):'
+    promo-discount: '&eEnter the discount: a percentage such as 20%, or the promotional price:'
+gui:
+  admin:
+    promotions:
+      add:
+        lore:
+        - '&7Enter the start time, end time and discount in turn'

@@ -12,7 +12,7 @@ softdepend: [ Vault, ExcellentEconomy, DiscordLink ]
 commands:
   aethermart:
     description: Open AetherMart (system shop and auction house)
-    usage: /<command> [help|version|reload|admin]
+    usage: /<command> [shop|auction|help|version|reload|admin]
     aliases: [ mart ]
 
 permissions:

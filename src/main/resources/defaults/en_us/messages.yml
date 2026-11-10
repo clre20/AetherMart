@@ -1,6 +1,6 @@
 # AetherMart messages
 # Supports & colour codes and &#RRGGBB; {variables} are replaced automatically. Missing keys are added on start and /mart reload.
-messages-version: 1
+messages-version: 2
 # Language of this file; when config.yml changes language, this file is backed up and rebuilt
 language: en_us
 
@@ -168,20 +168,23 @@ admin:
     product-saved: "&aSaved {item}."
     too-many: "&cThe maximum number has been reached."
   promo:
-    added: "&aPromotion added (press Save on the product page to apply it)."
+    added: "&aPromotion added: {start} to {end}, {discount} (press Save on the product page to apply it)."
     bad-discount: "&cDiscount format: enter a percentage such as 20%, or the promotional price."
-    bad-range: "&cThe end time must be after the start time and after now."
-    bad-time: "&cTime format: yyyy-MM-dd HH:mm, for example 2026-11-11 00:00."
-    overlap: "&cThis overlaps another promotion."
+    bad-time: "&cCan't read that time. Try 11/1, 11/1 20:00, 2026-11-01 20:00, 20:00 or now; for the end you can also enter a length such as 3d or 12h."
+    end-before-start: "&cThe end time must be after the start time ({start})."
+    end-past: "&cThe end time has already passed. Please set it again."
+    no-end: "&cSet the end time first (use a quick button or type it)."
+    no-discount: "&cSet the discount first."
+    overlap: "&cThis overlaps another promotion ({start} to {end})."
     too-many: "&cThe maximum number of promotions has been reached."
   input:
     category-name: "&eEnter a category name (& colour codes allowed):"
     price: "&eEnter a price (minimum {min}):"
     unit: "&eEnter how many items one purchase gives (1 to 2304):"
     limit: "&eEnter the limit per player (0 = unlimited):"
-    promo-start: "&eEnter the promotion start (yyyy-MM-dd HH:mm, for example {example}):"
-    promo-end: "&eEnter the promotion end (yyyy-MM-dd HH:mm):"
-    promo-discount: "&eEnter the discount: a percentage such as 20%, or the promotional price:"
+    promo-start: "&eEnter the start time, for example 11/1, 11/1 20:00, 20:00 or now:"
+    promo-end: "&eEnter the end time (for example 11/7 or 11/7 23:59) or a length (for example 3d, 12h, 1d12h):"
+    promo-discount: "&eEnter the discount: a percentage such as 20%, or the promotional price (regular price {price}):"
     player: "&eEnter a player name:"
 
 command:
@@ -194,6 +197,8 @@ command:
   help:
     header: "&6=== AetherMart v{version} ==="
     open: "&e/{label} &7- Open AetherMart (system shop, auctions, settings)"
+    shop: "&e/{label} shop &7- Open the system shop"
+    auction: "&e/{label} auction &7- Open player auctions"
     help: "&e/{label} help &7- Show this help"
     version: "&e/{label} version &7- Version and update check"
     reload: "&e/{label} reload &7- Reload and fill in the config files"
@@ -677,10 +682,36 @@ gui:
         lore: ["&7{start} to {end}"]
       add:
         name: "&aAdd promotion"
-        lore: ["&7Enter the start time, end time and discount in turn"]
+        lore: ["&7Open the new promotion menu"]
       help:
         name: "&fHow it works"
         lore: ["&7Periods can't overlap", "&7The sale price can't be below the minimum price", "&7Press Save on the product page to apply"]
+    promo-create:
+      title: "&8New promotion"
+      unset: "Not set"
+      start:
+        name: "&fStart: &e{start}"
+        lore: ["&7Left-click to type, for example 11/1, 11/1 20:00, 20:00"]
+      now:
+        name: "&aStart now"
+        lore: ["&7Set the start time to now"]
+      end:
+        name: "&fEnd: &e{end}"
+        lore: ["&7Length: {length}", "&7Use a quick button below, or left-click to type", "&7a date (11/7, 11/7 23:59) or a length (3d, 12h)"]
+      preset:
+        name: "&f{length} promotion"
+        lore: ["&7Ends {end}", "&eLeft-click to choose"]
+      discount:
+        name: "&fDiscount: &e{discount}"
+        lore: ["&7Regular {original} → sale &6{after}", "&7Left-click to enter 20% (discount) or a sale price"]
+      cancel:
+        name: "&eBack (don't add)"
+      help:
+        name: "&fHow it works"
+        lore: ["&7Date only: start is 00:00, end is 23:59", "&7No year = this year (past dates mean next year)", "&7Periods can't overlap other promotions", "&7Press Save on the product page to apply"]
+      confirm:
+        name: "&aAdd promotion"
+        lore: ["&7{start} to {end} ({length})", "&7{discount}: {original} → &6{after}"]
     auctions:
       title: "&8Auction management"
       entry:

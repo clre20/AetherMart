@@ -1,6 +1,6 @@
 # AetherMart 訊息文字
 # 支援 & 色碼與 &#RRGGBB；{變數} 會自動取代。啟動與 /mart reload 時自動補齊缺少的項目。
-messages-version: 1
+messages-version: 2
 # 這個檔案的語言；config.yml 換語言時，此檔會備份並以新語言重建
 language: zh_tw
 
@@ -168,20 +168,23 @@ admin:
     product-saved: "&a已儲存 {item}。"
     too-many: "&c數量已達上限。"
   promo:
-    added: "&a已加入促銷（回商品頁按儲存才生效）。"
+    added: "&a已加入促銷：{start} ～ {end}，{discount}（回商品頁按儲存才生效）。"
     bad-discount: "&c折扣格式：打折輸入例如 20%，或直接輸入促銷價。"
-    bad-range: "&c結束時間要晚於開始時間與現在。"
-    bad-time: "&c時間格式：yyyy-MM-dd HH:mm，例如 2026-11-11 00:00。"
-    overlap: "&c和其他促銷時段重疊。"
+    bad-time: "&c看不懂這個時間。可以輸入：11/1、11/1 20:00、2026-11-01 20:00、20:00、現在；結束時間也可以輸入長度，例如 3d、12h。"
+    end-before-start: "&c結束時間要晚於開始時間（{start}）。"
+    end-past: "&c結束時間已經過了，請重新設定。"
+    no-end: "&c請先設定結束時間（點快速按鈕或輸入）。"
+    no-discount: "&c請先設定折扣。"
+    overlap: "&c和其他促銷時段重疊（{start} ～ {end}）。"
     too-many: "&c促銷數量已達上限。"
   input:
     category-name: "&e請輸入分類名稱（可用 & 色碼）："
     price: "&e請輸入價格（最低 {min}）："
     unit: "&e請輸入每次購買的數量（1 ～ 2304）："
     limit: "&e請輸入每人購買上限（0 = 不限）："
-    promo-start: "&e請輸入促銷開始時間（yyyy-MM-dd HH:mm，例如 {example}）："
-    promo-end: "&e請輸入促銷結束時間（yyyy-MM-dd HH:mm）："
-    promo-discount: "&e請輸入折扣：打折輸入 20%，或直接輸入促銷價："
+    promo-start: "&e請輸入開始時間，例如 11/1、11/1 20:00、20:00、現在："
+    promo-end: "&e請輸入結束時間（例如 11/7、11/7 23:59）或長度（例如 3d、12h、1d12h）："
+    promo-discount: "&e請輸入折扣：打折輸入 20%，或直接輸入促銷價（原價 {price}）："
     player: "&e請輸入玩家名稱："
 
 command:
@@ -194,6 +197,8 @@ command:
   help:
     header: "&6=== AetherMart v{version} ==="
     open: "&e/{label} &7- 打開 AetherMart（系統商店、拍賣、個人設定）"
+    shop: "&e/{label} shop &7- 直接打開系統商店"
+    auction: "&e/{label} auction &7- 直接打開玩家拍賣"
     help: "&e/{label} help &7- 顯示這份說明"
     version: "&e/{label} version &7- 版本與檢查更新"
     reload: "&e/{label} reload &7- 重新載入並補齊設定檔"
@@ -677,10 +682,36 @@ gui:
         lore: ["&7{start} ～ {end}"]
       add:
         name: "&a新增促銷"
-        lore: ["&7依序輸入開始時間、結束時間、折扣"]
+        lore: ["&7開啟新增促銷介面"]
       help:
         name: "&f說明"
         lore: ["&7時段不能重疊", "&7促銷價不能低於最低售價", "&7回商品頁按儲存才生效"]
+    promo-create:
+      title: "&8新增促銷"
+      unset: "未設定"
+      start:
+        name: "&f開始時間：&e{start}"
+        lore: ["&7左鍵輸入，例如 11/1、11/1 20:00、20:00"]
+      now:
+        name: "&a從現在開始"
+        lore: ["&7把開始時間設為現在"]
+      end:
+        name: "&f結束時間：&e{end}"
+        lore: ["&7長度：{length}", "&7用下面的快速按鈕，或左鍵輸入", "&7日期（11/7、11/7 23:59）或長度（3d、12h）"]
+      preset:
+        name: "&f促銷 {length}"
+        lore: ["&7結束於 {end}", "&e左鍵選擇"]
+      discount:
+        name: "&f折扣：&e{discount}"
+        lore: ["&7原價 {original} → 促銷 &6{after}", "&7左鍵輸入 20%（打折）或促銷價"]
+      cancel:
+        name: "&e返回（不新增）"
+      help:
+        name: "&f說明"
+        lore: ["&7只寫日期時：開始取 00:00、結束取 23:59", "&7沒寫年份＝今年（已過的日期算明年）", "&7時段不能和其他促銷重疊", "&7新增後回商品頁按儲存才生效"]
+      confirm:
+        name: "&a確認新增"
+        lore: ["&7{start} ～ {end}（{length}）", "&7{discount}：{original} → &6{after}"]
     auctions:
       title: "&8拍賣管理"
       entry:
