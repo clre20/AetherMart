@@ -140,7 +140,38 @@ public final class AuctionCreateMenu extends Menu {
         }));
         set(33, plugin.icons().of(Material.BOOK, "gui.auction.create.info", vars));
         set(34, plugin.icons().filler());
-        set(35, plugin.icons().of(Material.LIME_CONCRETE, "gui.auction.create.confirm", vars), e -> confirm());
+        updateConfirm(vars);
+    }
+
+    /** 送出按鈕：能上架才是綠色，否則紅色並列出原因。放入／拿出物品後也會更新。 */
+    private void updateConfirm(Map<String, String> vars) {
+        List<ItemStack> items = new ArrayList<>();
+        for (int i = 0; i < 27; i++) {
+            ItemStack it = inv().getItem(i);
+            if (it != null && !it.getType().isAir()) {
+                items.add(it);
+            } else if (draft.items[i] != null) {
+                items.add(draft.items[i]);
+            }
+        }
+        List<String> reasons = plugin.auctions().createBlockers(viewer, draft, items);
+        set(35, plugin.icons().confirm(Material.LIME_CONCRETE, "gui.auction.create.confirm", vars, reasons), e -> confirm());
+    }
+
+    private boolean updateQueued;
+
+    /** 點擊處理完（物品真的移動後）的下一刻更新送出按鈕；同一刻多次點擊只更新一次。 */
+    private void queueConfirmUpdate() {
+        if (updateQueued) {
+            return;
+        }
+        updateQueued = true;
+        org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+            updateQueued = false;
+            if (!finished && !isSuspended() && viewer.getOpenInventory().getTopInventory().getHolder(false) == this) {
+                updateConfirm(vars(plugin.currencies().get(draft.currency)));
+            }
+        });
     }
 
     private Map<String, String> vars(Currency c) {
@@ -223,6 +254,9 @@ public final class AuctionCreateMenu extends Menu {
             }
         }
         // 背包與上方物品區：允許一般的左鍵拿起／放下
+        if (!e.isCancelled()) {
+            queueConfirmUpdate();
+        }
     }
 
     @Override

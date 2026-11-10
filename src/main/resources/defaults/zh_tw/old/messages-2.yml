@@ -1,0 +1,12 @@
+# AetherMart 1.1.0（messages-version 2）的舊預設文字。升級時，使用者檔案裡和這裡完全相同的項目會換成新版文字；改過的保留。
+gui:
+  hub:
+    auction:
+      lore:
+      - '&7玩家之間買賣物品'
+      - '&7進行中的拍賣：{count} 筆'
+      - '&7領取箱：{claims} 筆'
+      - ''
+      - '&e左鍵進入'
+link:
+  required: '&c需要先綁定 Discord 才能交易，請輸入 &f/dclink link&c。'

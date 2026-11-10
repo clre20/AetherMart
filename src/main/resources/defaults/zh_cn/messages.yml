@@ -1,6 +1,6 @@
 # AetherMart 消息文字
 # 支持 & 颜色代码与 &#RRGGBB；{变量} 会自动替换。启动与 /mart reload 时自动补齐缺少的项目。
-messages-version: 2
+messages-version: 3
 # 这个文件的语言；config.yml 换语言时，此文件会备份并以新语言重建
 language: zh_cn
 
@@ -30,6 +30,35 @@ startup:
     - "币种「{currency}」（{id}）无法使用：找不到 ExcellentEconomy，或 config.yml 填的货币 ID 不存在。"
     - "请确认已安装 ExcellentEconomy，并检查 currencies.{id}.id 是否和 ExcellentEconomy 的货币 ID 相同；在那之前相关交易会暂停。"
 
+reason:
+  no-permission: "没有权限"
+  loading: "数据加载中，请稍候"
+  banned: "得标未付款，禁止买卖至 {until}"
+  debt: "欠款 {debt}，余额不够扣清"
+  link-required: "尚未绑定 Discord（输入 /dclink link）"
+  link-unavailable: "暂时无法确认 Discord 绑定"
+  currency-unavailable: "{currency} 目前无法使用"
+  not-enough: "余额不足：需要 {amount}，目前 {balance}"
+  shop-gone: "商品已不存在"
+  shop-limit: "超过购买上限：本期还能买 {left} 个"
+  no-space: "背包空间不足"
+  paused: "拍卖场休市中"
+  no-items: "还没放入要卖的物品"
+  banned-item: "{item} 禁止贩售"
+  bad-currency: "这个币别不能用于拍卖"
+  no-price: "还没设置价格"
+  price-range: "价格要在 {min} ～ {max} 之间"
+  duration-range: "拍卖时间要在 {min} ～ {max} 之间"
+  listing-limit: "上架数量已满（{limit} 笔）"
+  category-gone: "分类已被删除"
+  below-min: "价格低于最低售价 {min}"
+  no-end: "还没设置结束时间"
+  no-discount: "还没设置折扣"
+  end-before-start: "结束时间要晚于开始时间"
+  end-past: "结束时间已经过了"
+  overlap: "和其他促销重叠（{start} ～ {end}）"
+  too-many: "促销数量已达上限"
+
 time:
   day: "天"
   hour: "小时"
@@ -48,7 +77,8 @@ input:
   cancelled: "&7已取消输入。"
 
 link:
-  required: "&c需要先绑定 Discord 才能交易，请输入 &f/dclink link&c。"
+  required: "&c需要先绑定 Discord 才能交易，请输入 &f/dclink link&c（刚绑定的话会在几秒内自动确认）。"
+  confirmed: "&a已确认你的 Discord 绑定，现在可以交易了。"
   unavailable: "&c目前无法确认 Discord 绑定，交易暂停，请联络管理员。"
 
 penalty:
@@ -222,6 +252,10 @@ update:
 
 gui:
   common:
+    blocked:
+      name: "&c无法提交"
+      header: "&c原因："
+      line: "&c• {reason}"
     close:
       name: "&c关闭"
     back:
@@ -255,7 +289,13 @@ gui:
       lore:
         - "&7玩家之间买卖物品"
         - "&7进行中的拍卖：{count} 笔"
-        - "&7领取箱：{claims} 笔"
+        - ""
+        - "&e左键进入"
+    claims:
+      name: "&d领取箱"
+      lore:
+        - "&7买到、得标、退回的物品与款项"
+        - "&7待领取：{count} 笔"
         - ""
         - "&e左键进入"
 
@@ -412,9 +452,6 @@ gui:
       mine:
         name: "&b我的上架"
         lore: ["&7上架中：{count} 笔", "&7出价中：{bidding} 笔", "", "&e左键进入"]
-      claims:
-        name: "&d领取箱"
-        lore: ["&7待领取：{count} 笔", "", "&e左键进入"]
     browser:
       title: "&8拍卖场"
       empty:

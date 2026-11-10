@@ -42,6 +42,9 @@ public final class LinkReader {
     private final Map<UUID, String> linked = new ConcurrentHashMap<>();
     private final Set<UUID> bypass = ConcurrentHashMap.newKeySet();
     private final Set<UUID> known = ConcurrentHashMap.newKeySet();
+    /** 立即重查的冷卻（每人 3 秒一次），避免狂點造成大量查詢。 */
+    private final Map<UUID, Long> lastRefresh = new ConcurrentHashMap<>();
+    private final Set<UUID> deferred = ConcurrentHashMap.newKeySet();
     private volatile boolean ok;
     private volatile boolean warned;
     private Connection conn;
@@ -86,7 +89,44 @@ public final class LinkReader {
         thread.execute(() -> query(List.of(id)));
     }
 
+    /** 立即在背景重查一位玩家（例如剛綁定、被擋下時）；每人 3 秒最多一次，冷卻中的要求延後到冷卻結束再查（只排一次）。 */
+    public void refresh(UUID id) {
+        refresh(id, 3000);
+    }
+
+    public void refresh(UUID id, long gapMs) {
+        long now = System.currentTimeMillis();
+        Long last = lastRefresh.get(id);
+        if (last != null && now - last < gapMs) {
+            if (deferred.add(id)) {
+                long wait = gapMs - (now - last);
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    deferred.remove(id);
+                    if (Bukkit.getPlayer(id) != null) {
+                        refresh(id, gapMs);
+                    }
+                }, Math.max(1L, wait / 50L + 1));
+            }
+            return;
+        }
+        lastRefresh.put(id, now);
+        thread.execute(() -> query(List.of(id)));
+    }
+
+    /** 每秒由介面計時器呼叫：開著 AetherMart 介面、需要綁定卻還沒綁的玩家，每 5 秒重查一次。 */
+    public void watchUnlinked(Player p) {
+        if (!(plugin.config().requireLinkBuy || plugin.config().requireLinkSell) || linked.containsKey(p.getUniqueId())) {
+            return;
+        }
+        Long last = lastRefresh.get(p.getUniqueId());
+        if (last == null || System.currentTimeMillis() - last >= 5000) {
+            refresh(p.getUniqueId(), 5000);
+        }
+    }
+
     public void onQuit(UUID id) {
+        lastRefresh.remove(id);
+        deferred.remove(id);
         linked.remove(id);
         bypass.remove(id);
         known.remove(id);
@@ -106,10 +146,13 @@ public final class LinkReader {
             return;
         }
         try {
+            List<UUID> nowLinked = new ArrayList<>();
             for (UUID id : ids) {
                 String dc = discordIdUnsafe(id);
                 if (dc != null) {
-                    linked.put(id, dc);
+                    if (linked.put(id, dc) == null && known.contains(id)) {
+                        nowLinked.add(id);
+                    }
                 } else {
                     linked.remove(id);
                 }
@@ -121,6 +164,9 @@ public final class LinkReader {
                 known.add(id);
             }
             ok = true;
+            if (!nowLinked.isEmpty()) {
+                Bukkit.getScheduler().runTask(plugin, () -> linkedNow(nowLinked));
+            }
         } catch (SQLException e) {
             fail(e);
         }
@@ -146,6 +192,25 @@ public final class LinkReader {
             }).get(15, TimeUnit.SECONDS);
         } catch (Exception e) {
             return Optional.empty();
+        }
+    }
+
+    /** 主執行緒：剛確認綁定的玩家收到提示，開著的介面重畫（送出按鈕變綠）。 */
+    private void linkedNow(List<UUID> ids) {
+        if (!plugin.isEnabled()) {
+            return;
+        }
+        for (UUID id : ids) {
+            Player p = Bukkit.getPlayer(id);
+            if (p == null) {
+                continue;
+            }
+            if (plugin.config().requireLinkBuy || plugin.config().requireLinkSell) {
+                plugin.messages().send(p, "link.confirmed");
+            }
+            if (p.getOpenInventory().getTopInventory().getHolder(false) instanceof clre20.aetherMart.gui.Menu m && !m.isSuspended()) {
+                m.refresh();
+            }
         }
     }
 

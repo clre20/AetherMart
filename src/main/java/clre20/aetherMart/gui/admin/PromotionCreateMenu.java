@@ -163,13 +163,42 @@ public final class PromotionCreateMenu extends Menu {
 
         set(27, plugin.icons().of(Material.OAK_DOOR, "gui.admin.promo-create.cancel"), e -> list.reopen());
         set(31, plugin.icons().of(Material.BOOK, "gui.admin.promo-create.help"));
-        set(35, plugin.icons().of(Material.EMERALD_BLOCK, "gui.admin.promo-create.confirm", vars), e -> {
+        set(35, plugin.icons().confirm(Material.EMERALD_BLOCK, "gui.admin.promo-create.confirm", vars, blockers(p)), e -> {
             if (add(p, c)) {
                 list.reopen();
             } else {
                 plugin.sounds().fail(viewer);
             }
         });
+    }
+
+    /** 確認按鈕用：目前不能新增的原因。 */
+    private java.util.List<String> blockers(ShopModel.Product p) {
+        java.util.List<String> out = new java.util.ArrayList<>();
+        var g = plugin.guard();
+        if (end < 0) {
+            out.add(g.reason("reason.no-end", Map.of()));
+        } else if (end <= start) {
+            out.add(g.reason("reason.end-before-start", Map.of()));
+        } else if (end <= System.currentTimeMillis()) {
+            out.add(g.reason("reason.end-past", Map.of()));
+        }
+        if (percent == null && price == null) {
+            out.add(g.reason("reason.no-discount", Map.of()));
+        }
+        if (p.promotions.size() >= 45) {
+            out.add(g.reason("reason.too-many", Map.of()));
+        }
+        if (end > start) {
+            ShopModel.Promotion probe = new ShopModel.Promotion("probe", start, end, BigDecimal.ONE, null);
+            for (ShopModel.Promotion o : p.promotions) {
+                if (o.overlaps(probe)) {
+                    out.add(g.reason("reason.overlap", Vars.of("start", time(o.start()), "end", time(o.end()))));
+                    break;
+                }
+            }
+        }
+        return out;
     }
 
     private void setStart(long t) {

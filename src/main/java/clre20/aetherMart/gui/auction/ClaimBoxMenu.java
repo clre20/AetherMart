@@ -2,6 +2,7 @@ package clre20.aetherMart.gui.auction;
 
 import clre20.aetherMart.AetherMart;
 import clre20.aetherMart.currency.Currency;
+import clre20.aetherMart.gui.HubMenu;
 import clre20.aetherMart.gui.Menu;
 import clre20.aetherMart.gui.Paging;
 import clre20.aetherMart.player.ClaimEntry;
@@ -47,7 +48,7 @@ public final class ClaimBoxMenu extends Menu {
         for (int i = 45; i < 54; i++) {
             set(i, plugin.icons().filler());
         }
-        set(49, plugin.icons().of(Material.OAK_DOOR, "gui.common.back"), e -> new AuctionHomeMenu(plugin, viewer).open());
+        set(49, plugin.icons().of(Material.OAK_DOOR, "gui.common.back-hub"), e -> new HubMenu(plugin, viewer).open());
         if (list == null) {
             set(22, plugin.icons().of(Material.CLOCK, "gui.common.loading"));
             return;

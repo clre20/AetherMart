@@ -41,6 +41,28 @@ public final class ProductEditMenu extends Menu {
         return 3;
     }
 
+    /** 儲存按鈕用：目前不能儲存的原因。 */
+    private List<String> saveBlockers() {
+        List<String> out = new java.util.ArrayList<>();
+        var g = plugin.guard();
+        if (!viewer.hasPermission("aethermart.admin.shop")) {
+            out.add(g.reason("reason.no-permission", Map.of()));
+            return out;
+        }
+        if (plugin.shop().category(draft.categoryId) == null) {
+            out.add(g.reason("reason.category-gone", Map.of()));
+        }
+        if (!isNew && plugin.shop().product(draft.id) == null) {
+            out.add(g.reason("reason.shop-gone", Map.of()));
+        }
+        Currency c = plugin.currencies().get(draft.currency);
+        BigDecimal min = plugin.market().shopMin(draft.currency);
+        if (draft.price.compareTo(min) < 0) {
+            out.add(g.reason("reason.below-min", Vars.of("min", c == null ? min.toPlainString() : c.format(min))));
+        }
+        return out;
+    }
+
     ShopModel.Product draft() {
         return draft;
     }
@@ -148,7 +170,7 @@ public final class ProductEditMenu extends Menu {
             });
         }
         set(18, plugin.icons().of(Material.BARRIER, "gui.admin.common.cancel"), e -> new AdminProductsMenu(plugin, viewer, draft.categoryId, 0).open());
-        set(26, plugin.icons().of(Material.LIME_CONCRETE, "gui.admin.common.save"), e -> {
+        set(26, plugin.icons().confirm(Material.LIME_CONCRETE, "gui.admin.common.save", vars, saveBlockers()), e -> {
             if (!AdminCategoriesMenu.allowed(plugin, viewer)) {
                 return;
             }

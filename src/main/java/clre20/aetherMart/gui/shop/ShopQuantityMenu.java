@@ -86,7 +86,7 @@ public final class ShopQuantityMenu extends Menu {
             reopen();
         }));
         set(22, plugin.icons().of(Material.OAK_DOOR, "gui.common.back"), e -> new ShopProductsMenu(plugin, viewer, p.categoryId, 0).open());
-        set(26, plugin.icons().of(Material.EMERALD_BLOCK, "gui.shop.quantity.confirm", vars), e -> {
+        set(26, plugin.icons().confirm(Material.EMERALD_BLOCK, "gui.shop.quantity.confirm", vars, plugin.shop().buyBlockers(viewer, p, portions)), e -> {
             if (!plugin.shop().buy(viewer, p, portions)) {
                 plugin.sounds().fail(viewer);
             }

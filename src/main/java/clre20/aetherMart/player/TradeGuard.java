@@ -44,7 +44,46 @@ public final class TradeGuard {
         }
         if (!plugin.links().allowed(p, buying)) {
             plugin.messages().send(p, plugin.links().available() ? "link.required" : "link.unavailable");
+            plugin.links().refresh(p.getUniqueId());
             return false;
+        }
+        return true;
+    }
+
+    /**
+     * 不會扣款、不送訊息的檢查，給送出按鈕顯示原因用（主執行緒）。
+     * 欠款只有在餘額不夠扣清時才算原因（送出時會先自動扣款）。
+     */
+    public List<String> reasons(Player p, boolean buying) {
+        List<String> out = new ArrayList<>();
+        PlayerData d = plugin.players().get(p.getUniqueId());
+        if (d == null) {
+            out.add(reason("reason.loading", Map.of()));
+            return out;
+        }
+        if (d.banned(System.currentTimeMillis())) {
+            out.add(reason("reason.banned", Vars.of("until", TimeUtil.format(d.bannedUntil, plugin.config().zone, TimeUtil.DATE_TIME_SHORT))));
+        }
+        if (d.hasDebt() && !canPayDebts(p, d)) {
+            out.add(reason("reason.debt", Vars.of("debt", debtText(d))));
+        }
+        if (!plugin.links().allowed(p, buying)) {
+            out.add(reason(plugin.links().available() ? "reason.link-required" : "reason.link-unavailable", Map.of()));
+            plugin.links().refresh(p.getUniqueId());
+        }
+        return out;
+    }
+
+    public String reason(String key, Map<String, String> vars) {
+        return plugin.messages().plain(key, vars);
+    }
+
+    private boolean canPayDebts(Player p, PlayerData d) {
+        for (Map.Entry<String, BigDecimal> e : d.debts.entrySet()) {
+            Currency c = plugin.currencies().get(e.getKey());
+            if (c == null || !c.available() || c.round(c.provider().balance(p)).compareTo(e.getValue()) < 0) {
+                return false;
+            }
         }
         return true;
     }

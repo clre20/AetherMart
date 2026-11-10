@@ -63,6 +63,31 @@ public final class Icons {
         return item;
     }
 
+    /**
+     * 送出按鈕：reasons 是空的 → 原本的綠色按鈕；否則變成紅色「無法送出」，
+     * 原本的說明保留，下面列出每個原因（文字在 messages.yml 的 reason.* 與 gui.common.blocked.*）。
+     */
+    public ItemStack confirm(Material ok, String base, Map<String, String> vars, List<String> reasons) {
+        if (reasons == null || reasons.isEmpty()) {
+            return of(ok, base, vars);
+        }
+        ItemStack item = of(Material.RED_CONCRETE, base, vars);
+        ItemMeta meta = item.getItemMeta();
+        meta.displayName(Texts.item(plugin.messages().raw("gui.common.blocked.name"), vars));
+        List<Component> lore = meta.hasLore() && meta.lore() != null ? new ArrayList<>(meta.lore()) : new ArrayList<>();
+        if (!lore.isEmpty()) {
+            lore.add(Component.empty());
+        }
+        lore.add(Texts.item(plugin.messages().raw("gui.common.blocked.header"), Map.of()));
+        String line = plugin.messages().raw("gui.common.blocked.line");
+        for (String r : reasons) {
+            lore.add(Texts.item(line, Map.of("reason", r)));
+        }
+        meta.lore(lore);
+        item.setItemMeta(meta);
+        return item;
+    }
+
     public ItemStack glow(ItemStack item, boolean on) {
         if (!on) {
             return item;

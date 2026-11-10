@@ -269,6 +269,45 @@ public final class ShopService {
 
     // ---------------- 購買 ----------------
 
+    /** 送出按鈕用：目前不能購買的原因（不扣款、不送訊息）；空的代表可以買。 */
+    public List<String> buyBlockers(Player player, ShopModel.Product p, int portions) {
+        List<String> out = new ArrayList<>();
+        var g = plugin.guard();
+        if (!player.hasPermission("aethermart.use")) {
+            out.add(g.reason("reason.no-permission", Map.of()));
+            return out;
+        }
+        if (products.get(p.id) != p) {
+            out.add(g.reason("reason.shop-gone", Map.of()));
+            return out;
+        }
+        Currency c = plugin.currencies().get(p.currency);
+        if (c == null || !c.available()) {
+            out.add(g.reason("reason.currency-unavailable", Vars.of("currency", c == null ? p.currency : c.name())));
+            return out;
+        }
+        out.addAll(g.reasons(player, true));
+        long now = System.currentTimeMillis();
+        Quote q = quote(p, portions, now);
+        PlayerData d = plugin.players().get(player.getUniqueId());
+        if (d != null) {
+            int left = remaining(d, p, now);
+            if (left >= 0 && q.items() > left) {
+                out.add(g.reason("reason.shop-limit", Vars.of("left", Math.max(0, left))));
+            }
+        }
+        ItemStack stack = p.item.clone();
+        stack.setAmount(1);
+        if (!Inventories.fits(player.getInventory(), stack, q.items())) {
+            out.add(g.reason("reason.no-space", Map.of()));
+        }
+        BigDecimal balance = c.round(c.provider().balance(player));
+        if (balance.compareTo(q.total()) < 0) {
+            out.add(g.reason("reason.not-enough", Vars.of("amount", c.format(q.total()), "balance", c.format(balance))));
+        }
+        return out;
+    }
+
     /** 購買；成功或失敗都會送出訊息。回傳是否成功。 */
     public boolean buy(Player player, ShopModel.Product p, int portions) {
         if (portions <= 0 || portions > 2304) {

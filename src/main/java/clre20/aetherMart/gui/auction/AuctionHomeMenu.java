@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Map;
 
-/** 拍賣主頁：拍賣場、建立拍賣、我的上架、領取箱、我的交易紀錄。 */
+/** 拍賣主頁：拍賣場、建立拍賣、我的上架、我的交易紀錄（領取箱在分流介面）。 */
 public final class AuctionHomeMenu extends Menu {
 
     public AuctionHomeMenu(AetherMart plugin, Player viewer) {
@@ -38,9 +38,9 @@ public final class AuctionHomeMenu extends Menu {
         }
         String state = plain(plugin.auctions().paused() ? "gui.auction.home.state-paused" : "gui.auction.home.state-open", Map.of());
         set(4, plugin.icons().of(Material.PAPER, "gui.auction.home.history"), e -> new HistoryMenu(plugin, viewer, null, 0).open());
-        set(10, plugin.icons().of(Material.CHEST, "gui.auction.home.browse", Vars.of("count", plugin.auctions().all().size(), "state", state)),
+        set(11, plugin.icons().of(Material.CHEST, "gui.auction.home.browse", Vars.of("count", plugin.auctions().all().size(), "state", state)),
                 e -> new AuctionBrowserMenu(plugin, viewer).open());
-        set(12, plugin.icons().of(Material.ANVIL, "gui.auction.home.create", Vars.of("used", plugin.auctions().listedBy(viewer.getUniqueId()).size(),
+        set(13, plugin.icons().of(Material.ANVIL, "gui.auction.home.create", Vars.of("used", plugin.auctions().listedBy(viewer.getUniqueId()).size(),
                 "limit", plugin.auctions().listingLimit(viewer))), e -> {
             if (!viewer.hasPermission("aethermart.auction.sell")) {
                 plugin.messages().send(viewer, "common.no-permission");
@@ -48,10 +48,8 @@ public final class AuctionHomeMenu extends Menu {
             }
             new AuctionCreateMenu(plugin, viewer, null).open();
         });
-        set(14, plugin.icons().of(Material.BOOK, "gui.auction.home.mine", Vars.of("count", plugin.auctions().listedBy(viewer.getUniqueId()).size(),
+        set(15, plugin.icons().of(Material.BOOK, "gui.auction.home.mine", Vars.of("count", plugin.auctions().listedBy(viewer.getUniqueId()).size(),
                 "bidding", plugin.auctions().biddingBy(viewer.getUniqueId()).size())), e -> new MyListingsMenu(plugin, viewer, 0).open());
-        set(16, plugin.icons().of(Material.ENDER_CHEST, "gui.auction.home.claims", Vars.of("count", plugin.claims().count(viewer.getUniqueId()))),
-                e -> new ClaimBoxMenu(plugin, viewer, 0).open());
         set(22, plugin.icons().of(Material.OAK_DOOR, "gui.common.back-hub"), e -> new HubMenu(plugin, viewer).open());
     }
 }

@@ -213,6 +213,9 @@ public final class AetherMart extends JavaPlugin {
     private void tickMenus() {
         for (Player p : Bukkit.getOnlinePlayers()) {
             InventoryHolder h = p.getOpenInventory().getTopInventory().getHolder(false);
+            if (h instanceof clre20.aetherMart.gui.Menu) {
+                links.watchUnlinked(p);
+            }
             if (h instanceof Tickable t) {
                 try {
                     t.tick();

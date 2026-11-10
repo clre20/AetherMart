@@ -1,0 +1,12 @@
+# Old default texts from AetherMart 1.1.0 (messages-version 2). On upgrade, entries in your file that still match these exactly are replaced with the new wording; edited ones are kept.
+gui:
+  hub:
+    auction:
+      lore:
+      - '&7Buy and sell between players'
+      - '&7Active auctions: {count}'
+      - '&7Claim box: {claims}'
+      - ''
+      - '&eLeft-click to open'
+link:
+  required: '&cYou need to link Discord before trading. Use &f/dclink link&c.'

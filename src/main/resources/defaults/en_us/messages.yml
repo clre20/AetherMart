@@ -1,6 +1,6 @@
 # AetherMart messages
 # Supports & colour codes and &#RRGGBB; {variables} are replaced automatically. Missing keys are added on start and /mart reload.
-messages-version: 2
+messages-version: 3
 # Language of this file; when config.yml changes language, this file is backed up and rebuilt
 language: en_us
 
@@ -30,6 +30,35 @@ startup:
     - "Currency \"{currency}\" ({id}) is unavailable: ExcellentEconomy is missing, or the currency ID in config.yml does not exist."
     - "Check that ExcellentEconomy is installed and that currencies.{id}.id matches an ExcellentEconomy currency ID. Until then, related trades are paused."
 
+reason:
+  no-permission: "No permission"
+  loading: "Loading your data, please wait"
+  banned: "Unpaid winning bid: banned from trading until {until}"
+  debt: "Debt {debt}; your balance can't cover it"
+  link-required: "Discord not linked (use /dclink link)"
+  link-unavailable: "Can't check your Discord link right now"
+  currency-unavailable: "{currency} is unavailable right now"
+  not-enough: "Not enough money: need {amount}, you have {balance}"
+  shop-gone: "This product no longer exists"
+  shop-limit: "Over the purchase limit: {left} left this period"
+  no-space: "Not enough inventory space"
+  paused: "The auction market is closed"
+  no-items: "No items added yet"
+  banned-item: "{item} can't be sold"
+  bad-currency: "This currency can't be used for auctions"
+  no-price: "Price not set"
+  price-range: "The price must be between {min} and {max}"
+  duration-range: "The duration must be between {min} and {max}"
+  listing-limit: "Listing limit reached ({limit})"
+  category-gone: "The category was deleted"
+  below-min: "Price is below the minimum {min}"
+  no-end: "End time not set"
+  no-discount: "Discount not set"
+  end-before-start: "The end time must be after the start time"
+  end-past: "The end time has already passed"
+  overlap: "Overlaps another promotion ({start} to {end})"
+  too-many: "Promotion limit reached"
+
 time:
   day: "d"
   hour: "h"
@@ -48,7 +77,8 @@ input:
   cancelled: "&7Input cancelled."
 
 link:
-  required: "&cYou need to link Discord before trading. Use &f/dclink link&c."
+  required: "&cYou need to link Discord before trading. Use &f/dclink link&c (a new link is confirmed automatically within a few seconds)."
+  confirmed: "&aYour Discord link is confirmed. You can trade now."
   unavailable: "&cDiscord links can't be checked right now, so trading is paused. Please contact an admin."
 
 penalty:
@@ -222,6 +252,10 @@ update:
 
 gui:
   common:
+    blocked:
+      name: "&cCan't submit yet"
+      header: "&cReason:"
+      line: "&c• {reason}"
     close:
       name: "&cClose"
     back:
@@ -255,7 +289,13 @@ gui:
       lore:
         - "&7Buy and sell between players"
         - "&7Active auctions: {count}"
-        - "&7Claim box: {claims}"
+        - ""
+        - "&eLeft-click to open"
+    claims:
+      name: "&dClaim box"
+      lore:
+        - "&7Bought, won and returned items and money"
+        - "&7Waiting: {count}"
         - ""
         - "&eLeft-click to open"
 
@@ -412,9 +452,6 @@ gui:
       mine:
         name: "&bMy listings"
         lore: ["&7Listed: {count}", "&7Bidding on: {bidding}", "", "&eLeft-click to open"]
-      claims:
-        name: "&dClaim box"
-        lore: ["&7Waiting: {count}", "", "&eLeft-click to open"]
     browser:
       title: "&8Auction market"
       empty:

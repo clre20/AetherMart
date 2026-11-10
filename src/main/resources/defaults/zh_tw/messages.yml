@@ -1,6 +1,6 @@
 # AetherMart 訊息文字
 # 支援 & 色碼與 &#RRGGBB；{變數} 會自動取代。啟動與 /mart reload 時自動補齊缺少的項目。
-messages-version: 2
+messages-version: 3
 # 這個檔案的語言；config.yml 換語言時，此檔會備份並以新語言重建
 language: zh_tw
 
@@ -30,6 +30,35 @@ startup:
     - "幣別「{currency}」（{id}）無法使用：找不到 ExcellentEconomy，或 config.yml 填的貨幣 ID 不存在。"
     - "請確認已安裝 ExcellentEconomy，並檢查 currencies.{id}.id 是否和 ExcellentEconomy 的貨幣 ID 相同；在那之前相關交易會暫停。"
 
+reason:
+  no-permission: "沒有權限"
+  loading: "資料載入中，請稍候"
+  banned: "得標未付款，禁止買賣至 {until}"
+  debt: "欠款 {debt}，餘額不夠扣清"
+  link-required: "尚未綁定 Discord（輸入 /dclink link）"
+  link-unavailable: "暫時無法確認 Discord 綁定"
+  currency-unavailable: "{currency} 目前無法使用"
+  not-enough: "餘額不足：需要 {amount}，目前 {balance}"
+  shop-gone: "商品已不存在"
+  shop-limit: "超過購買上限：本期還能買 {left} 個"
+  no-space: "背包空間不足"
+  paused: "拍賣場休市中"
+  no-items: "還沒放入要賣的物品"
+  banned-item: "{item} 禁止販售"
+  bad-currency: "這個幣別不能用於拍賣"
+  no-price: "還沒設定價格"
+  price-range: "價格要在 {min} ～ {max} 之間"
+  duration-range: "拍賣時間要在 {min} ～ {max} 之間"
+  listing-limit: "上架數量已滿（{limit} 筆）"
+  category-gone: "分類已被刪除"
+  below-min: "價格低於最低售價 {min}"
+  no-end: "還沒設定結束時間"
+  no-discount: "還沒設定折扣"
+  end-before-start: "結束時間要晚於開始時間"
+  end-past: "結束時間已經過了"
+  overlap: "和其他促銷重疊（{start} ～ {end}）"
+  too-many: "促銷數量已達上限"
+
 time:
   day: "天"
   hour: "小時"
@@ -48,7 +77,8 @@ input:
   cancelled: "&7已取消輸入。"
 
 link:
-  required: "&c需要先綁定 Discord 才能交易，請輸入 &f/dclink link&c。"
+  required: "&c需要先綁定 Discord 才能交易，請輸入 &f/dclink link&c（剛綁定的話會在幾秒內自動確認）。"
+  confirmed: "&a已確認你的 Discord 綁定，現在可以交易了。"
   unavailable: "&c目前無法確認 Discord 綁定，交易暫停，請聯絡管理員。"
 
 penalty:
@@ -222,6 +252,10 @@ update:
 
 gui:
   common:
+    blocked:
+      name: "&c無法送出"
+      header: "&c原因："
+      line: "&c• {reason}"
     close:
       name: "&c關閉"
     back:
@@ -255,7 +289,13 @@ gui:
       lore:
         - "&7玩家之間買賣物品"
         - "&7進行中的拍賣：{count} 筆"
-        - "&7領取箱：{claims} 筆"
+        - ""
+        - "&e左鍵進入"
+    claims:
+      name: "&d領取箱"
+      lore:
+        - "&7買到、得標、退回的物品與款項"
+        - "&7待領取：{count} 筆"
         - ""
         - "&e左鍵進入"
 
@@ -412,9 +452,6 @@ gui:
       mine:
         name: "&b我的上架"
         lore: ["&7上架中：{count} 筆", "&7出價中：{bidding} 筆", "", "&e左鍵進入"]
-      claims:
-        name: "&d領取箱"
-        lore: ["&7待領取：{count} 筆", "", "&e左鍵進入"]
     browser:
       title: "&8拍賣場"
       empty:

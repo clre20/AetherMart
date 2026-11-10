@@ -324,6 +324,56 @@ public final class AuctionService {
 
     // ---------------- 上架 ----------------
 
+    /** 送出按鈕用：目前不能上架的原因（不送訊息）；空的代表可以上架。 */
+    public List<String> createBlockers(Player p, Draft d, List<ItemStack> items) {
+        List<String> out = new ArrayList<>();
+        var g = plugin.guard();
+        if (!p.hasPermission("aethermart.auction.sell")) {
+            out.add(g.reason("reason.no-permission", Map.of()));
+            return out;
+        }
+        if (paused()) {
+            out.add(g.reason("reason.paused", Map.of()));
+        }
+        if (items.isEmpty()) {
+            out.add(g.reason("reason.no-items", Map.of()));
+        }
+        for (ItemStack i : items) {
+            if (plugin.banned().isBanned(i)) {
+                out.add(g.reason("reason.banned-item", Vars.of("item", plugin.names().name(i))));
+                break;
+            }
+        }
+        Currency c = plugin.currencies().get(d.currency);
+        if (c == null || !plugin.market().auctionCurrencies.contains(d.currency)) {
+            out.add(g.reason("reason.bad-currency", Map.of()));
+        } else if (!c.available()) {
+            out.add(g.reason("reason.currency-unavailable", Vars.of("currency", c.name())));
+        } else if (d.price == null) {
+            out.add(g.reason("reason.no-price", Map.of()));
+        } else {
+            BigDecimal min = plugin.market().auctionMin(d.currency);
+            if (d.price.compareTo(min) < 0 || d.price.compareTo(plugin.config().maxAmount) > 0) {
+                out.add(g.reason("reason.price-range", Vars.of("min", c.format(min), "max", c.format(plugin.config().maxAmount))));
+            }
+        }
+        long duration = d.duration <= 0 ? plugin.market().durationDefault : d.duration;
+        if (duration < plugin.market().durationMin || duration > plugin.market().durationMax) {
+            out.add(g.reason("reason.duration-range", Vars.of("min", durationText(plugin.market().durationMin),
+                    "max", durationText(plugin.market().durationMax))));
+        }
+        if (listedBy(p.getUniqueId()).size() >= listingLimit(p)) {
+            out.add(g.reason("reason.listing-limit", Vars.of("limit", listingLimit(p))));
+        }
+        out.addAll(g.reasons(p, false));
+        return out;
+    }
+
+    private String durationText(long ms) {
+        var m = plugin.messages();
+        return TimeUtil.formatShort(ms, m.plain("time.day", Map.of()), m.plain("time.hour", Map.of()), m.plain("time.minute", Map.of()));
+    }
+
     /** 驗證並建立拍賣；成功時清空草稿物品並回傳 true。 */
     public boolean create(Player p, Draft d) {
         if (!p.hasPermission("aethermart.auction.sell")) {

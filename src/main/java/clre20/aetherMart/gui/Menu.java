@@ -62,6 +62,10 @@ public abstract class Menu implements InventoryHolder {
         return inventory;
     }
 
+    public boolean isSuspended() {
+        return suspended;
+    }
+
     public final Player viewer() {
         return viewer;
     }
