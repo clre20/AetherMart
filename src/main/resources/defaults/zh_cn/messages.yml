@@ -13,6 +13,9 @@ common:
   unknown-player: "&c找不到玩家 {player}（需要曾进过服务器）。"
 
 startup:
+  settle-retry:
+    - "拍卖 #A-{id} 结算时经济插件发生错误：{error}（第 {tries} 次）"
+    - "这不算得标者付不出钱，不会处罚；5 分钟后自动重试。如果一直失败，可以用 /mart admin auction 强制下架（物品退回卖家、不扣任何人钱）。"
   no-vault:
     - "=============================================="
     - "AetherMart 无法启动：找不到 Vault。"

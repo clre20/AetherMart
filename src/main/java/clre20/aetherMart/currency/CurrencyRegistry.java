@@ -23,7 +23,7 @@ public final class CurrencyRegistry {
     public void load(MainConfig config) {
         currencies.clear();
         // 沒裝 Vault 時不能載入 VaultProvider（會碰到 Vault 的類別），改用 MissingProvider
-        CurrencyProvider vault = vaultInstalled() ? new VaultProvider() : new MissingProvider();
+        CurrencyProvider vault = vaultInstalled() ? new VaultProvider(logger) : new MissingProvider();
         for (MainConfig.CurrencyDef d : config.currencies.values()) {
             CurrencyProvider p;
             if (d.type().equals("excellenteconomy")) {

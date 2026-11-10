@@ -13,6 +13,9 @@ common:
   unknown-player: "&cPlayer {player} not found (they must have joined the server before)."
 
 startup:
+  settle-retry:
+    - "Auction #A-{id}: the economy plugin failed during settlement: {error} (try {tries})"
+    - "This does not count as the winner failing to pay, so nobody is penalised; it retries in 5 minutes. If it keeps failing, force-remove it with /mart admin auction (items go back to the seller, nobody is charged)."
   no-vault:
     - "=============================================="
     - "AetherMart cannot start: Vault is not installed."

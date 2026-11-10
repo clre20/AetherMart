@@ -7,6 +7,7 @@ import clre20.aetherMart.data.TradeStore;
 import clre20.aetherMart.player.ClaimEntry;
 import clre20.aetherMart.util.ItemCodec;
 import clre20.aetherMart.util.TimeUtil;
+import clre20.aetherMart.util.Texts;
 import clre20.aetherMart.util.Vars;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -90,10 +91,55 @@ public final class AuctionService {
         }
         version++;
         ticker = Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 20L, 20L);
-        for (Auction a : resettle) {
-            plugin.activity().log("AUCTION", "resume settlement #" + a.id + " after restart");
-            settle(a);
+        // 重啟前正在結算的拍賣：等伺服器啟動完成（5 秒後）再繼續，且跳過已經因這筆拍賣受罰的出價者
+        if (!resettle.isEmpty()) {
+            Bukkit.getScheduler().runTaskLater(plugin, () -> resumeSettlements(resettle), 100L);
         }
+    }
+
+    private void resumeSettlements(List<Auction> list) {
+        List<Long> ids = new ArrayList<>();
+        for (Auction a : list) {
+            ids.add(a.id);
+        }
+        plugin.db().submit(conn -> {
+            Map<Long, Set<UUID>> punished = new HashMap<>();
+            try (PreparedStatement ps = conn.prepareStatement("SELECT actor FROM trades WHERE type = ? AND auction_id = ?")) {
+                for (long id : ids) {
+                    ps.setString(1, TradeRecord.Type.PENALTY.name());
+                    ps.setLong(2, id);
+                    try (var rs = ps.executeQuery()) {
+                        while (rs.next()) {
+                            String actor = rs.getString(1);
+                            if (actor != null) {
+                                try {
+                                    punished.computeIfAbsent(id, k -> new HashSet<>()).add(UUID.fromString(actor));
+                                } catch (IllegalArgumentException ignored) {
+                                    // 壞資料就略過
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return punished;
+        }).whenComplete((punished, err) -> runMain(() -> {
+            for (Auction a : list) {
+                if (active.get(a.id) != a || a.phase != Auction.Phase.SETTLING) {
+                    continue;
+                }
+                Set<UUID> skip = punished == null ? Set.of() : punished.getOrDefault(a.id, Set.of());
+                List<Auction.Bid> cands = new ArrayList<>();
+                for (Auction.Bid b : a.candidates()) {
+                    if (!skip.contains(b.bidder())) {
+                        cands.add(b);
+                    }
+                }
+                plugin.activity().log("AUCTION", "resume settlement #" + a.id + " after restart (skip " + skip.size() + " punished bidder(s))");
+                version++;
+                tryCandidate(a, cands, 0);
+            }
+        }));
     }
 
     private List<Auction> readAll(Connection c) throws SQLException {
@@ -676,6 +722,7 @@ public final class AuctionService {
 
     private void endWithReturn(Auction a, TradeRecord.Type type, ClaimEntry.Source source, String by) {
         active.remove(a.id);
+        settleRetries.remove(a.id);
         version++;
         long now = System.currentTimeMillis();
         deleteAuction(a.id, null);
@@ -692,6 +739,9 @@ public final class AuctionService {
     }
 
     // ---------------- 結算 ----------------
+
+    /** 結算時經濟插件出錯的重試次數（每筆拍賣）；成功或下架後移除。 */
+    private final Map<Long, Integer> settleRetries = new HashMap<>();
 
     private void settle(Auction a) {
         a.phase = Auction.Phase.SETTLING;
@@ -722,20 +772,44 @@ public final class AuctionService {
         }
         BigDecimal tax = tax(a, cand.amount());
         BigDecimal total = cand.amount().add(tax);
-        Player online = Bukkit.getPlayer(cand.bidder());
-        if (online != null) {
-            boolean ok = c.provider().withdraw(online, total);
-            onCharge(a, list, index, cand, tax, ok, ok ? c.provider().balance(online) : null);
-            return;
+        // 線上、離線都走同一條路：經濟插件出錯（ProviderException 等）時延後重試，絕不當成付不出錢
+        CompletableFuture<Boolean> f;
+        try {
+            f = c.provider().withdraw(cand.bidder(), total);
+        } catch (RuntimeException ex) {
+            f = CompletableFuture.failedFuture(ex);
         }
-        CompletableFuture<Boolean> f = c.provider().withdraw(cand.bidder(), total);
         pending.put(a.id, f);
         f.whenComplete((ok, err) -> runMain(() -> {
             if (pending.remove(a.id) == null) {
                 return;
             }
-            onCharge(a, list, index, cand, tax, err == null && Boolean.TRUE.equals(ok), null);
+            if (err != null) {
+                retrySettlement(a, list, index, err);
+                return;
+            }
+            settleRetries.remove(a.id);
+            boolean paid = Boolean.TRUE.equals(ok);
+            Player online = Bukkit.getPlayer(cand.bidder());
+            onCharge(a, list, index, cand, tax, paid, paid && online != null ? c.provider().balance(online) : null);
         }));
+    }
+
+    /** 結算時經濟插件出錯：5 分鐘後從同一位候選人重試；第一次與之後每小時在後台提示一次。 */
+    private void retrySettlement(Auction a, List<Auction.Bid> list, int index, Throwable err) {
+        int n = settleRetries.merge(a.id, 1, Integer::sum);
+        Throwable root = err instanceof java.util.concurrent.CompletionException && err.getCause() != null ? err.getCause() : err;
+        plugin.activity().log("AUCTION", "#" + a.id + " settlement error (try " + n + "): " + root);
+        if (n == 1 || n % 12 == 0) {
+            for (String line : plugin.messages().list("startup.settle-retry")) {
+                plugin.getLogger().warning(Texts.plain(line, Vars.of("id", a.id, "error", String.valueOf(root.getMessage()), "tries", n)));
+            }
+        }
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (active.get(a.id) == a && a.phase == Auction.Phase.SETTLING) {
+                tryCandidate(a, list, index);
+            }
+        }, 5 * 60 * 20L);
     }
 
     private void onCharge(Auction a, List<Auction.Bid> list, int index, Auction.Bid cand, BigDecimal tax, boolean ok, BigDecimal balance) {
@@ -753,6 +827,7 @@ public final class AuctionService {
     /** 成交：物品給買家（領取箱）、錢給賣家、紀錄與通知。 */
     private void completeSale(Auction a, UUID buyer, String buyerName, BigDecimal price, BigDecimal tax, boolean bidMode, BigDecimal buyerBalance) {
         active.remove(a.id);
+        settleRetries.remove(a.id);
         version++;
         long now = System.currentTimeMillis();
         Currency c = plugin.currencies().get(a.currency);

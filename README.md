@@ -65,7 +65,7 @@ AetherMart 是一個 Paper 伺服器用的綜合商店插件：系統商店與�
 # 需求：Paper 1.21.x ～ 26.x、Java 21+、Vault 與一個經濟插件（缺少時後台會說明缺什麼）
 # 選用：ExcellentEconomy（特殊幣）、DiscordLink（Discord 綁定）
 plugins/
-├── AetherMart-1.2.1.jar
+├── AetherMart-1.2.2.jar
 ├── Vault.jar
 └── TheosisEconomy.jar
 ```
@@ -201,7 +201,7 @@ Players only need `/mart`; everything else happens in the menus. Bedrock players
 # Requires Paper 1.21.x to 26.x, Java 21+, Vault and an economy plugin
 # Optional: ExcellentEconomy (special currency), DiscordLink (Discord links)
 plugins/
-├── AetherMart-1.2.1.jar
+├── AetherMart-1.2.2.jar
 ├── Vault.jar
 └── TheosisEconomy.jar
 ```

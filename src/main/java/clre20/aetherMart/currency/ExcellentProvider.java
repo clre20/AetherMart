@@ -157,7 +157,7 @@ public final class ExcellentProvider implements CurrencyProvider {
             CompletableFuture<Double> f = (CompletableFuture<Double>) balA.invoke(api, player, currencyId);
             return f.thenApply(d -> d == null ? BigDecimal.ZERO : BigDecimal.valueOf(d));
         } catch (ReflectiveOperationException | RuntimeException e) {
-            return CompletableFuture.completedFuture(BigDecimal.ZERO);
+            return CompletableFuture.failedFuture(new ProviderException("ExcellentEconomy getBalance failed: " + e, e));
         }
     }
 
@@ -167,7 +167,7 @@ public final class ExcellentProvider implements CurrencyProvider {
             CompletableFuture<Object> f = (CompletableFuture<Object>) m.invoke(api, player, currencyId, amount.doubleValue());
             return f.thenApply(r -> r != null && "SUCCESS".equals(r.toString()));
         } catch (ReflectiveOperationException | RuntimeException e) {
-            return CompletableFuture.completedFuture(false);
+            return CompletableFuture.failedFuture(new ProviderException("ExcellentEconomy operation failed: " + e, e));
         }
     }
 
