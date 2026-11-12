@@ -14,6 +14,7 @@ import clre20.aetherMart.data.MetaStore;
 import clre20.aetherMart.data.TradeStore;
 import clre20.aetherMart.discord.DiscordBot;
 import clre20.aetherMart.discord.LinkReader;
+import clre20.aetherMart.discord.DailyReceipts;
 import clre20.aetherMart.discord.Notifier;
 import clre20.aetherMart.gui.ChatInput;
 import clre20.aetherMart.gui.Icons;
@@ -68,6 +69,7 @@ public final class AetherMart extends JavaPlugin {
     private DiscordBot bot;
     private LinkReader links;
     private Notifier notifier;
+    private DailyReceipts dailyReceipts;
     private DailyReport daily;
     private ChatInput input;
     private Icons icons;
@@ -119,6 +121,7 @@ public final class AetherMart extends JavaPlugin {
             renderer = new PdfRenderer(this, () -> pdf, () -> config.language);
             bot = new DiscordBot(getLogger());
             links = new LinkReader(this);
+            dailyReceipts = new DailyReceipts(this);
             notifier = new Notifier(this);
             notifier.load();
 
@@ -151,6 +154,7 @@ public final class AetherMart extends JavaPlugin {
         notifier.start();
         links.start();
         daily.start();
+        dailyReceipts.start();
         Bukkit.getScheduler().runTaskTimer(this, this::tickMenus, 20L, 20L);
         Bukkit.getScheduler().runTaskLater(this, () -> currencies.checkAll(messages), 40L);
 
@@ -349,6 +353,10 @@ public final class AetherMart extends JavaPlugin {
 
     public Notifier notifier() {
         return notifier;
+    }
+
+    public DailyReceipts dailyReceipts() {
+        return dailyReceipts;
     }
 
     public ChatInput input() {

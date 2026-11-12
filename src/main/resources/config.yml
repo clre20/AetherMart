@@ -56,6 +56,16 @@ discord:
   personal:
     # 個人私訊通知（送到 DiscordLink 綁定的帳號）
     enabled: true
+    daily-receipts:
+      # true：系統商店購買、拍賣購買、得標、拍賣賣出不在交易當下私訊，
+      #       改在每日結算時間（上面 daily-summary 的 time）每人寄一則，附當天所有收據合併的 PDF
+      # false：照舊每筆交易當下私訊
+      # 上架、下架、流標、出價被超越、違約仍然即時私訊
+      enabled: true
+      # 結算後一位一位產生 PDF 並寄出，每位玩家之間間隔幾毫秒（避免結算時間一次處理完）
+      interval-ms: 3000
+      # 一份 PDF 最多附幾頁單筆明細；超過的部分仍會列在第一頁的總表
+      max-detail-pages: 100
   require-link:
     # 未綁定 Discord 不能購買與出價
     buy: false

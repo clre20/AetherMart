@@ -56,6 +56,13 @@ public final class Notifier {
     private final AetherMart plugin;
     private final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
     private final Deque<Notice> queue = new ConcurrentLinkedDeque<>();
+    /** 每日收據另外排隊，依 daily-receipts.interval-ms 一位一位寄，不擋其他通知。 */
+    private final Deque<Notice> receiptQueue = new ConcurrentLinkedDeque<>();
+    private static final int RECEIPT_ATTEMPTS = 5;
+    private static final int DETAIL_LINES = 10;
+    private long lastReceiptRun;
+    /** 測試用：-Daethermart.debug.dryRunReceipts=true 時每日收據不真的寄，PDF 存到 debug-receipts/（平常不需要）。 */
+    private static final boolean DRY_RUN = Boolean.getBoolean("aethermart.debug.dryRunReceipts");
     private ScheduledExecutorService sender;
 
     public Notifier(AetherMart plugin) {
@@ -79,7 +86,9 @@ public final class Notifier {
             }
             return out;
         }, 30);
-        queue.addAll(list);
+        for (Notice n : list) {
+            (Notice.RECEIPTS.equals(n.target) ? receiptQueue : queue).add(n);
+        }
     }
 
     public void start() {
@@ -90,11 +99,12 @@ public final class Notifier {
             return t;
         });
         sender.scheduleWithFixedDelay(this::tickSafe, 3000, interval, TimeUnit.MILLISECONDS);
+        sender.scheduleWithFixedDelay(this::receiptTickSafe, 5000, 500, TimeUnit.MILLISECONDS);
         sender.scheduleWithFixedDelay(() -> plugin.renderer().releaseIfIdle(), 1, 1, TimeUnit.MINUTES);
     }
 
     public int size() {
-        return queue.size();
+        return queue.size() + receiptQueue.size();
     }
 
     // ---------------- 排入 ----------------
@@ -106,6 +116,10 @@ public final class Notifier {
     public void personal(UUID player, String name, int flag, String key, Map<String, String> vars, Receipt receipt) {
         debugDump(receipt);
         if (!plugin.config().personalEnabled || !botConfigured() || Bukkit.getPluginManager().getPlugin("DiscordLink") == null) {
+            return;
+        }
+        if (receipt != null && plugin.dailyReceipts().handles(key)) {
+            plugin.dailyReceipts().store(player, name, flag, receipt);
             return;
         }
         Notice n = new Notice();
@@ -179,10 +193,22 @@ public final class Notifier {
         enqueue(n);
     }
 
+    /** 每日結算時呼叫：替一位玩家排一則每日收據（PDF 等輪到他時才產生）。 */
+    public void receipts(String player, String name, long from, long to) {
+        Notice n = new Notice();
+        n.target = Notice.RECEIPTS;
+        n.player = player;
+        n.playerName = name;
+        n.key = "discord.dm.daily-receipts";
+        n.from = from;
+        n.to = to;
+        enqueue(n);
+    }
+
     private void enqueue(Notice n) {
         n.created = System.currentTimeMillis();
         String json = gson.toJson(n);
-        queue.add(n);
+        (Notice.RECEIPTS.equals(n.target) ? receiptQueue : queue).add(n);
         plugin.db().submit(c -> {
             try (PreparedStatement ps = c.prepareStatement("INSERT INTO notify_queue(created,target,player,kind,payload,attempts) VALUES(?,?,?,?,?,0)",
                     Statement.RETURN_GENERATED_KEYS)) {
@@ -267,10 +293,12 @@ public final class Notifier {
     private void retry(List<Notice> group, String why) {
         for (Notice n : group) {
             n.attempts++;
-            if (n.attempts >= MAX_ATTEMPTS) {
-                drop(n, "failed " + MAX_ATTEMPTS + " times: " + why);
+            boolean receipts = Notice.RECEIPTS.equals(n.target);
+            int max = receipts ? RECEIPT_ATTEMPTS : MAX_ATTEMPTS;
+            if (n.attempts >= max) {
+                drop(n, "failed " + max + " times: " + why);
             } else {
-                n.retryAt = System.currentTimeMillis() + 5000L * n.attempts;
+                n.retryAt = System.currentTimeMillis() + (receipts ? 60_000L : 5000L) * n.attempts;
                 long id = n.id;
                 int attempts = n.attempts;
                 plugin.db().execute(c -> {
@@ -286,11 +314,16 @@ public final class Notifier {
 
     private void drop(Notice n, String why) {
         remove(n);
+        if (Notice.RECEIPTS.equals(n.target)) {
+            plugin.dailyReceipts().delete(n.player, n.from, n.to);
+        }
         plugin.activity().log("DISCORD", "dropped " + n.target + " " + n.key + (n.playerName == null ? "" : " to " + n.playerName) + ": " + why);
     }
 
     private void remove(Notice n) {
-        queue.remove(n);
+        if (!queue.remove(n)) {
+            receiptQueue.remove(n);
+        }
         long id = n.id;
         if (id > 0) {
             plugin.db().execute(c -> {
@@ -373,7 +406,8 @@ public final class Notifier {
             embed = embed("discord.dm.combined", Vars.of("player", head.playerName, "count", keep.size(), "lines", lines.toString().trim()),
                     plugin.pdf().theme());
             String number = receipts.isEmpty() ? "" : receipts.get(0).number + "-M";
-            pdf = receipts.isEmpty() ? null : plugin.renderer().combined(receipts, number, head.playerName, period, generated());
+            pdf = receipts.isEmpty() ? null : plugin.renderer().combined(receipts, number, head.playerName, period, generated(),
+                    "values.peak", Integer.MAX_VALUE);
             fileName = "AetherMart-" + number + ".pdf";
         }
         User user = jda.retrieveUserById(dc.get()).complete();
@@ -386,6 +420,122 @@ public final class Notifier {
         group.clear();
         group.addAll(keep);
         return true;
+    }
+
+    // ---------------- 每日收據 ----------------
+
+    private void receiptTickSafe() {
+        try {
+            receiptTick();
+        } catch (Throwable t) {
+            plugin.getLogger().log(Level.WARNING, "Discord receipt sender error", t);
+        }
+    }
+
+    /** 每 500 ms 看一次；距離上一位未滿 interval-ms 就等，一次只處理一位玩家。 */
+    private void receiptTick() {
+        long now = System.currentTimeMillis();
+        if (now - lastReceiptRun < plugin.config().dailyReceiptsIntervalMs || !(plugin.bot().ready() || DRY_RUN)) {
+            return;
+        }
+        Notice head = null;
+        for (Notice n : receiptQueue) {
+            if (n.retryAt <= now) {
+                head = n;
+                break;
+            }
+        }
+        if (head == null) {
+            return;
+        }
+        lastReceiptRun = now;
+        if (now - head.created > DailyReceipts.KEEP_MS) {
+            drop(head, "expired (older than 7 days)");
+            return;
+        }
+        try {
+            if (sendReceipts(head)) {
+                remove(head);
+                plugin.dailyReceipts().delete(head.player, head.from, head.to);
+            }
+        } catch (ErrorResponseException e) {
+            ErrorResponse r = e.getErrorResponse();
+            if (r == ErrorResponse.CANNOT_SEND_TO_USER || r == ErrorResponse.UNKNOWN_USER) {
+                drop(head, "Discord refused: " + r.name());
+            } else {
+                retry(new ArrayList<>(List.of(head)), e.getMessage());
+            }
+        } catch (Exception e) {
+            retry(new ArrayList<>(List.of(head)), e.toString());
+        } finally {
+            lastReceiptRun = System.currentTimeMillis();
+        }
+    }
+
+    /** 產生並寄出一位玩家的每日收據；true = 已處理完（寄出或沒東西可寄），false = 已放棄。 */
+    private boolean sendReceipts(Notice n) throws Exception {
+        UUID player = UUID.fromString(n.player);
+        int disabled = plugin.players().disabledNotifyDb(player).get(10, TimeUnit.SECONDS);
+        List<DailyReceipts.Row> rows = plugin.dailyReceipts().load(n.player, n.from, n.to).get(60, TimeUnit.SECONDS);
+        List<Receipt> receipts = new ArrayList<>();
+        for (DailyReceipts.Row row : rows) {
+            if (row.flag() == 0 || (disabled & row.flag()) == 0) {
+                receipts.add(row.receipt());
+            }
+        }
+        if (receipts.isEmpty()) {
+            plugin.activity().log("DISCORD", "daily receipts for " + n.playerName + ": nothing to send (" + rows.size() + " turned off)");
+            return true;
+        }
+        Optional<String> dc = plugin.links().discordId(player);
+        if (dc.isEmpty()) {
+            drop(n, "player has no Discord link");
+            return false;
+        }
+        var zone = plugin.config().zone;
+        DateTimeFormatter full = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String period = TimeUtil.format(n.from, zone, full) + " ～ " + TimeUtil.format(n.to, zone, full);
+        String number = "AM-R-" + TimeUtil.format(n.to - 1, zone, DateTimeFormatter.ofPattern("yyyyMMdd"));
+        StringBuilder lines = new StringBuilder();
+        for (int i = 0; i < receipts.size() && i < DETAIL_LINES; i++) {
+            Receipt r = receipts.get(i);
+            lines.append(plugin.messages().plain("discord.dm.daily-receipts.line", Vars.of(
+                    "time", nz(r.summaryTime), "type", nz(r.summaryType), "amount", nz(r.summaryAmount), "receipt", nz(r.number)))).append('\n');
+        }
+        if (receipts.size() > DETAIL_LINES) {
+            lines.append(plugin.messages().plain("discord.dm.daily-receipts.more", Vars.of("count", receipts.size() - DETAIL_LINES))).append('\n');
+        }
+        MessageEmbed embed = embed("discord.dm.daily-receipts", Vars.of("player", n.playerName, "count", receipts.size(),
+                "period", period, "lines", lines.toString().trim()), plugin.pdf().theme());
+        byte[] pdf = plugin.renderer().combined(receipts, number, n.playerName, period, generated(),
+                "values.daily-receipts", plugin.config().dailyReceiptsMaxPages);
+        String fileName = "AetherMart-" + number + ".pdf";
+        List<FileUpload> files = pdf.length <= MAX_FILE ? List.of(FileUpload.fromData(pdf, fileName)) : split(pdf, fileName);
+        if (DRY_RUN) {
+            File dir = new File(plugin.getDataFolder(), "debug-receipts");
+            Files.createDirectories(dir.toPath());
+            Files.write(new File(dir, n.player + "-" + fileName).toPath(), pdf);
+            plugin.activity().log("DISCORD", "[dry-run] daily receipts for " + n.playerName + ": " + embed.getTitle() + " | "
+                    + embed.getDescription().replace('\n', ' ') + " | files=" + files.size());
+            return true;
+        }
+        JDA jda = plugin.bot().jda();
+        if (jda == null) {
+            throw new IllegalStateException("bot not connected");
+        }
+        User user = jda.retrieveUserById(dc.get()).complete();
+        var ch = user.openPrivateChannel().complete();
+        ch.sendMessageEmbeds(embed).addFiles(files.get(0)).complete();
+        for (int i = 1; i < files.size(); i++) {
+            ch.sendFiles(files.get(i)).complete();
+        }
+        plugin.activity().log("DISCORD", "sent daily receipts to " + n.playerName + " (" + receipts.size() + " receipt(s), "
+                + pdf.length / 1024 + " KB)");
+        return true;
+    }
+
+    private static String nz(String s) {
+        return s == null ? "" : s;
     }
 
     private GuildMessageChannel adminChannel(JDA jda) {

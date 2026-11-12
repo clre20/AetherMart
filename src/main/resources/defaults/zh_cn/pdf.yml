@@ -100,6 +100,8 @@ text:
     people: "{count} 人"
     none: "—"
     peak: "交易尖峰时段，通知合并寄送"
+    daily-receipts: "每日消费收据，每天结算时间寄送一次"
+    first-pages: "前 {shown} 笔各一页，其余只列在总表"
     each-page: "每笔一页"
     records: "{count} 笔"
     pieces: "{count} 个"

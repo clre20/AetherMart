@@ -868,6 +868,11 @@ discord:
       title: "交易通知彙總（{count} 則）"
       description: "交易尖峰時段，{player} 的通知合併寄送：\n{lines}"
       line: "• {title}"
+    daily-receipts:
+      title: "每日收據（{count} 筆）"
+      description: "{player} 在 {period} 的購買、得標與賣出收據，完整明細見附件 PDF：\n{lines}"
+      line: "• {time} {type} {amount}"
+      more: "…另有 {count} 筆，請見 PDF"
   admin:
     shop-purchase:
       title: "系統商店購買"

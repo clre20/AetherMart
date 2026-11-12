@@ -11,6 +11,8 @@ public final class Notice {
     public static final String PERSONAL = "personal";
     public static final String ADMIN = "admin";
     public static final String DAILY = "daily";
+    /** 每日收據：一位玩家在 [from, to) 期間的收據合併寄送。 */
+    public static final String RECEIPTS = "receipts";
 
     public transient volatile long id;
     public transient volatile long retryAt;
@@ -23,6 +25,9 @@ public final class Notice {
     public Receipt receipt;
     /** 每日彙整的 PDF 檔名（reports/ 底下）。 */
     public String file;
+    /** 每日收據的期間（毫秒）。 */
+    public long from;
+    public long to;
     public long created;
     public int attempts;
 

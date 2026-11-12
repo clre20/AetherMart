@@ -373,8 +373,9 @@ public final class PdfRenderer {
         return build(r.number, generated, d -> receiptBody(d, r, true));
     }
 
-    /** 尖峰合併：第一頁總表與各幣別合計，之後一筆一頁。 */
-    public synchronized byte[] combined(List<Receipt> list, String number, String player, String period, String generated) throws IOException {
+    /** 合併明細（尖峰合併、每日收據）：第一頁總表與各幣別合計，之後一筆一頁（最多 maxPages 頁）。 */
+    public synchronized byte[] combined(List<Receipt> list, String number, String player, String period, String generated,
+                                        String reasonKey, int maxPages) throws IOException {
         return build(number, generated, d -> {
             d.header("combined", true);
             List<Receipt.Field> f = new ArrayList<>();
@@ -382,8 +383,10 @@ public final class PdfRenderer {
             f.add(new Receipt.Field(d.tx("fields.period"), period, false));
             f.add(new Receipt.Field(d.tx("fields.player"), player, false));
             f.add(new Receipt.Field(d.tx("fields.records"), d.tx("values.records").replace("{count}", String.valueOf(list.size())), false));
-            f.add(new Receipt.Field(d.tx("fields.reason"), d.tx("values.peak"), false));
-            f.add(new Receipt.Field(d.tx("fields.pages"), d.tx("values.each-page"), false));
+            f.add(new Receipt.Field(d.tx("fields.reason"), d.tx(reasonKey), false));
+            int shown = Math.min(list.size(), Math.max(1, maxPages));
+            f.add(new Receipt.Field(d.tx("fields.pages"), shown < list.size()
+                    ? d.tx("values.first-pages").replace("{shown}", String.valueOf(shown)) : d.tx("values.each-page"), false));
             d.info(f);
             d.section(d.tx("sections.summary"), 40);
             List<Col> cols = new ArrayList<>();
@@ -423,7 +426,8 @@ public final class PdfRenderer {
                 }
                 d.table(fc, fr, false);
             }
-            for (Receipt r : list) {
+            for (int i = 0; i < shown; i++) {
+                Receipt r = list.get(i);
                 d.nextPage(r.kind);
                 receiptBody(d, r, false);
             }

@@ -100,6 +100,8 @@ text:
     people: "{count}"
     none: "—"
     peak: "Peak hours: notices were combined"
+    daily-receipts: "Daily receipts, sent once at the settlement time"
+    first-pages: "First {shown} records get a page; the rest are listed in the summary"
     each-page: "One page per record"
     records: "{count}"
     pieces: "{count} pcs"

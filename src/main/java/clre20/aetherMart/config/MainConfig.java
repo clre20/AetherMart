@@ -36,6 +36,9 @@ public final class MainConfig {
     public int[] dailyTime;
     public boolean dailySendEmpty;
     public boolean personalEnabled;
+    public boolean dailyReceiptsEnabled;
+    public long dailyReceiptsIntervalMs;
+    public int dailyReceiptsMaxPages;
     public boolean requireLinkBuy;
     public boolean requireLinkSell;
     public boolean allowBypass;
@@ -114,6 +117,9 @@ public final class MainConfig {
         }
         dailySendEmpty = c.getBoolean("discord.admin.daily-summary.send-when-empty", true);
         personalEnabled = c.getBoolean("discord.personal.enabled", true);
+        dailyReceiptsEnabled = c.getBoolean("discord.personal.daily-receipts.enabled", true);
+        dailyReceiptsIntervalMs = clamp(c.getInt("discord.personal.daily-receipts.interval-ms", 3000), 500, 60_000);
+        dailyReceiptsMaxPages = clamp(c.getInt("discord.personal.daily-receipts.max-detail-pages", 100), 1, 1000);
         requireLinkBuy = c.getBoolean("discord.require-link.buy", false);
         requireLinkSell = c.getBoolean("discord.require-link.sell", false);
         allowBypass = c.getBoolean("discord.require-link.allow-bypass", true);

@@ -54,6 +54,12 @@ final class Schema {
                     CREATE TABLE IF NOT EXISTS notify_queue (
                       id INTEGER PRIMARY KEY AUTOINCREMENT, created INTEGER NOT NULL, target TEXT NOT NULL,
                       player TEXT, kind TEXT NOT NULL, payload TEXT NOT NULL, attempts INTEGER NOT NULL DEFAULT 0)""");
+            st.execute("""
+                    CREATE TABLE IF NOT EXISTS daily_receipts (
+                      id INTEGER PRIMARY KEY AUTOINCREMENT, time INTEGER NOT NULL, player TEXT NOT NULL,
+                      player_name TEXT NOT NULL, flag INTEGER NOT NULL, payload TEXT NOT NULL)""");
+            st.execute("CREATE INDEX IF NOT EXISTS daily_receipts_player ON daily_receipts(player, time)");
+            st.execute("CREATE INDEX IF NOT EXISTS daily_receipts_time ON daily_receipts(time)");
             st.execute("CREATE TABLE IF NOT EXISTS banned_items (id INTEGER PRIMARY KEY AUTOINCREMENT, material TEXT NOT NULL, item BLOB NOT NULL)");
             st.execute("CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)");
         }

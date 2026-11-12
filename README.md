@@ -23,6 +23,7 @@ AetherMart 是一個 Paper 伺服器用的綜合商店插件：系統商店與�
   - **休市與強制下架**：休市期間不能上架、購買或出價；強制下架時物品退回賣家，出價者都不會被扣款。
 - **Discord 通知（內建機器人，填入 Token 即可）**
   - **個人私訊 PDF**：購買、得標、賣出、上架、下架、流標、被超過、違約都會產生一份 PDF 明細；玩家可在個人設定頁逐項開關（違約通知無法關閉）。
+  - **每日收據**：系統商店購買、拍賣購買、得標、賣出不再一筆一則，改在每日結算時間每人寄一則，附當天所有收據合併的 PDF；結算時一位一位產生、間隔寄出，不會在結算時間一次處理完（可在 `discord.personal.daily-receipts` 關閉，改回即時）。
   - **管理員頻道**：每筆交易即時卡片（可關閉）＋每日結算時間送出每日彙整 PDF。
   - **尖峰合併與限速**：通知排隊慢慢送，佇列過長時同一人的通知合併成一則，避免卡住或被 Discord 限流。
   - **綁定檢查**：讀取 [DiscordLink](https://github.com/clre20/Discord-link-Minecraft-Plugin) 的綁定資料（唯讀），可設定未綁定時不能購買或上架。
@@ -159,6 +160,7 @@ Players only need `/mart`; everything else happens in the menus. Bedrock players
   - **Market pause and force removal**: while paused, nobody can list, buy or bid. Force-removed items return to the seller and no bidder is charged.
 - **Discord (built-in bot, just add a token)**
   - **Personal DMs with a PDF** for purchases, wins, sales, listings, removals, expiries, outbids and penalties. Players can toggle each type in their settings (penalty notices cannot be turned off).
+  - **Daily receipts**: shop purchases, auction purchases, wins and sales are no longer sent one by one. At the settlement time each player gets one DM with a combined PDF of the day's receipts; players are processed one at a time with a delay, so the settlement time is not a spike (`discord.personal.daily-receipts`, can be turned off).
   - **Admin channel**: a card for every trade (optional) and a daily summary PDF at the settlement time.
   - **Peak merging and rate limiting** keep the bot within Discord's limits.
   - **Link check**: reads [DiscordLink](https://github.com/clre20/Discord-link-Minecraft-Plugin) bindings (read-only). Buying or selling can require a linked account.

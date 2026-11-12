@@ -868,6 +868,11 @@ discord:
       title: "Trade notices ({count})"
       description: "Peak trading hours: notices for {player} were combined:\n{lines}"
       line: "• {title}"
+    daily-receipts:
+      title: "Daily receipts ({count})"
+      description: "Purchases, wins and sales for {player} during {period}. Full details are in the attached PDF:\n{lines}"
+      line: "• {time} {type} {amount}"
+      more: "…and {count} more in the PDF"
   admin:
     shop-purchase:
       title: "System shop purchase"
