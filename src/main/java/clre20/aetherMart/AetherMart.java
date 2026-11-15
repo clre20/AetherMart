@@ -180,10 +180,10 @@ public final class AetherMart extends JavaPlugin {
         activity.log("SYSTEM", "AetherMart " + getPluginMeta().getVersion() + " enabled");
     }
 
-    /** config.yml 裡有沒有走 Vault 的幣別（type 不是 excellenteconomy 的都走 Vault）。 */
+    /** config.yml 裡有沒有走 Vault 的幣別（type: vault）。 */
     private boolean needsVault() {
         for (MainConfig.CurrencyDef d : config.currencies.values()) {
-            if (!d.type().equals("excellenteconomy")) {
+            if (d.type().equals("vault")) {
                 return true;
             }
         }

@@ -29,6 +29,9 @@ startup:
   currency-no-economy:
     - "币种「{currency}」（{id}）无法使用：已安装 Vault，但没有经济插件向 Vault 注册。"
     - "请安装支持 Vault 的经济插件（例如 TheosisEconomy、EssentialsX）；在那之前用这个币定价的商品与拍卖会暂停。"
+  currency-no-vaultbank:
+    - "币种「{currency}」（{id}）无法使用：找不到 VaultBank，或 config.yml 填的币种 ID 不存在或已停用。"
+    - "请确认已安装 VaultBank，并检查 currencies.{id}.id 是否和 VaultBank config.yml 里启用的币种 ID 相同（例如 penguin）；在那之前相关交易会暂停。"
   currency-no-excellent:
     - "币种「{currency}」（{id}）无法使用：找不到 ExcellentEconomy，或 config.yml 填的货币 ID 不存在。"
     - "请确认已安装 ExcellentEconomy，并检查 currencies.{id}.id 是否和 ExcellentEconomy 的货币 ID 相同；在那之前相关交易会暂停。"

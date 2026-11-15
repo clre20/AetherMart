@@ -29,6 +29,9 @@ startup:
   currency-no-economy:
     - "Currency \"{currency}\" ({id}) is unavailable: Vault is installed, but no economy plugin is registered with it."
     - "Install an economy plugin that supports Vault (such as TheosisEconomy or EssentialsX). Until then, products and auctions priced in it are paused."
+  currency-no-vaultbank:
+    - "Currency \"{currency}\" ({id}) is unavailable: VaultBank is missing, or the currency ID in config.yml does not exist or is disabled."
+    - "Check that VaultBank is installed and that currencies.{id}.id matches an enabled currency ID in VaultBank's config.yml (for example penguin). Until then, related trades are paused."
   currency-no-excellent:
     - "Currency \"{currency}\" ({id}) is unavailable: ExcellentEconomy is missing, or the currency ID in config.yml does not exist."
     - "Check that ExcellentEconomy is installed and that currencies.{id}.id matches an ExcellentEconomy currency ID. Until then, related trades are paused."

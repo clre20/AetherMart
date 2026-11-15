@@ -1,6 +1,6 @@
 # AetherMart
 
-AetherMart 是一個 Paper 伺服器用的綜合商店插件：系統商店與玩家拍賣場放在同一套箱子介面裡，支援 Vault 預設幣與 ExcellentEconomy 特殊幣，並內建 Discord 機器人，把每一筆交易做成 PDF 明細私訊給玩家、每日彙整送到管理員頻道。
+AetherMart 是一個 Paper 伺服器用的綜合商店插件：系統商店與玩家拍賣場放在同一套箱子介面裡，支援 Vault 預設幣，以及 VaultBank 或 ExcellentEconomy 的特殊幣，並內建 Discord 機器人，把每一筆交易做成 PDF 明細私訊給玩家、每日彙整送到管理員頻道。
 
 玩家只需要記住 `/mart`，其他所有操作都在介面裡完成；基岩版玩家（Geyser）一樣使用箱子介面。
 
@@ -64,11 +64,11 @@ AetherMart 是一個 Paper 伺服器用的綜合商店插件：系統商店與�
 
 ```bash
 # 需求：Paper 1.21.x ～ 26.x、Java 21+、Vault 與一個經濟插件（缺少時後台會說明缺什麼）
-# 選用：ExcellentEconomy（特殊幣）、DiscordLink（Discord 綁定）
+# 選用：VaultBank 或 ExcellentEconomy（特殊幣）、DiscordLink（Discord 綁定）
 plugins/
-├── AetherMart-1.2.3.jar
+├── AetherMart-1.4.0.jar
 ├── Vault.jar
-└── TheosisEconomy.jar
+└── VaultBank.jar
 ```
 
 ### 2. 設定特殊幣
@@ -76,6 +76,11 @@ plugins/
 ```yaml
 # config.yml
 currencies:
+  penguin:
+    type: vaultbank
+    id: "penguin"     # VaultBank 的幣種 ID（VaultBank config.yml 的 currencies）
+    name: "企鵝幣"
+    unit: "企鵝幣"
   special:
     type: excellenteconomy
     id: "gems"        # ExcellentEconomy 裡的貨幣 ID
@@ -137,7 +142,7 @@ AetherMart 以 [GNU General Public License v3.0](LICENSE) 發布。
 
 # AetherMart (English)
 
-AetherMart is an all-in-one shop plugin for Paper servers. A system shop and a player auction house share one chest UI, with Vault and ExcellentEconomy currencies, and a built-in Discord bot that sends players a PDF receipt for every trade and posts a daily summary to an admin channel.
+AetherMart is an all-in-one shop plugin for Paper servers. A system shop and a player auction house share one chest UI, with Vault, VaultBank and ExcellentEconomy currencies, and a built-in Discord bot that sends players a PDF receipt for every trade and posts a daily summary to an admin channel.
 
 Players only need `/mart`; everything else happens in the menus. Bedrock players (Geyser) use the same chest UI.
 
@@ -201,11 +206,11 @@ Players only need `/mart`; everything else happens in the menus. Bedrock players
 
 ```bash
 # Requires Paper 1.21.x to 26.x, Java 21+, Vault and an economy plugin
-# Optional: ExcellentEconomy (special currency), DiscordLink (Discord links)
+# Optional: VaultBank or ExcellentEconomy (special currency), DiscordLink (Discord links)
 plugins/
-├── AetherMart-1.2.3.jar
+├── AetherMart-1.4.0.jar
 ├── Vault.jar
-└── TheosisEconomy.jar
+└── VaultBank.jar
 ```
 
 ### 2. Set the language

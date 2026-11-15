@@ -16,8 +16,8 @@ timezone: "Asia/Taipei"
 max-amount: 1000000000
 
 # 幣別：鍵是幣別 ID（給 shop.yml、auction.yml 用）
-#   type: vault = 預設幣（走 Vault）；excellenteconomy = ExcellentEconomy 的貨幣
-#   id: ExcellentEconomy 裡的貨幣 ID（只有 excellenteconomy 需要）
+#   type: vault = 預設幣（走 Vault）；excellenteconomy = ExcellentEconomy 的貨幣；vaultbank = VaultBank 的幣種（例如企鵝幣）
+#   id: ExcellentEconomy 的貨幣 ID，或 VaultBank 的幣種 ID（例如 penguin）；vault 不需要
 #   name: 幣名稱；unit: 金額後面的單位
 #   default: true 的那一個是預設幣（只能有一個）
 currencies:

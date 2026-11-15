@@ -17,7 +17,7 @@ import org.bukkit.event.server.PluginEnableEvent;
 
 import java.util.UUID;
 
-/** 進服載入、離線清除；ExcellentEconomy 啟用／停用時重新連接。 */
+/** 進服載入、離線清除；ExcellentEconomy、VaultBank 啟用／停用時重新連接。 */
 public final class PlayerListener implements Listener {
 
     private final AetherMart plugin;
@@ -77,14 +77,14 @@ public final class PlayerListener implements Listener {
 
     @EventHandler
     public void onPluginEnable(PluginEnableEvent e) {
-        if (e.getPlugin().getName().equals("ExcellentEconomy")) {
+        if (e.getPlugin().getName().equals("ExcellentEconomy") || e.getPlugin().getName().equals("VaultBank")) {
             Bukkit.getScheduler().runTask(plugin, () -> plugin.currencies().refreshProviders());
         }
     }
 
     @EventHandler
     public void onPluginDisable(PluginDisableEvent e) {
-        if (e.getPlugin().getName().equals("ExcellentEconomy")) {
+        if (e.getPlugin().getName().equals("ExcellentEconomy") || e.getPlugin().getName().equals("VaultBank")) {
             plugin.currencies().refreshProviders();
         }
     }

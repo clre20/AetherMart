@@ -86,7 +86,7 @@ public final class MainConfig {
                     continue;
                 }
                 String type = s.getString("type", "vault").toLowerCase(Locale.ROOT);
-                if (!type.equals("vault") && !type.equals("excellenteconomy")) {
+                if (!type.equals("vault") && !type.equals("excellenteconomy") && !type.equals("vaultbank")) {
                     plugin.getLogger().warning("Currency '" + id + "' has unknown type " + type + ", skipped");
                     continue;
                 }

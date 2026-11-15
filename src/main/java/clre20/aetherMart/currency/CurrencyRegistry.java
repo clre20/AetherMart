@@ -30,6 +30,10 @@ public final class CurrencyRegistry {
                 ExcellentProvider ep = new ExcellentProvider(d.providerId(), logger);
                 ep.resolve();
                 p = ep;
+            } else if (d.type().equals("vaultbank")) {
+                VaultBankProvider vp = new VaultBankProvider(d.providerId(), logger);
+                vp.resolve();
+                p = vp;
             } else {
                 p = vault;
             }
@@ -37,11 +41,13 @@ public final class CurrencyRegistry {
         }
     }
 
-    /** ExcellentEconomy 啟用或停用時重新連接。 */
+    /** ExcellentEconomy 或 VaultBank 啟用、停用時重新連接。 */
     public void refreshProviders() {
         for (Currency c : currencies.values()) {
             if (c.provider() instanceof ExcellentProvider ep) {
                 ep.resolve();
+            } else if (c.provider() instanceof VaultBankProvider vp) {
+                vp.resolve();
             }
         }
     }
@@ -102,6 +108,8 @@ public final class CurrencyRegistry {
                 key = "startup.currency-no-vault";
             } else if (c.provider() instanceof VaultProvider) {
                 key = "startup.currency-no-economy";
+            } else if (c.provider() instanceof VaultBankProvider) {
+                key = "startup.currency-no-vaultbank";
             } else {
                 key = "startup.currency-no-excellent";
             }
