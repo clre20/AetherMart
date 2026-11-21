@@ -120,6 +120,6 @@ public final class UpdateChecker {
     }
 
     public void shutdown() {
-        thread.shutdownNow();
+        // 無常駐線程，不需關閉
     }
 }
