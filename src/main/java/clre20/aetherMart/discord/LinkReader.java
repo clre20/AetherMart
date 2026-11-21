@@ -1,62 +1,29 @@
 package clre20.aetherMart.discord;
 
 import clre20.aetherMart.AetherMart;
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
+import clre20.discordLink.api.DiscordLinkAPI;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
-import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 /**
- * 讀 DiscordLink 的綁定資料（唯讀開它的 SQLite，不修改 DiscordLink）。
- * 線上玩家進服時查一次、之後定時批次更新；查詢都在自己的背景執行緒。
+ * 讀取 DiscordLink 的綁定資料。
+ * 優先透過 DiscordLinkAPI 記憶體快取查詢（不碰硬碟、不開連線線程）。
  */
 public final class LinkReader {
 
-    private static final Pattern DB_NAME = Pattern.compile("[A-Za-z0-9._-]{1,64}");
-
     private final AetherMart plugin;
-    private final ExecutorService thread = Executors.newSingleThreadExecutor(r -> {
-        Thread t = new Thread(r, "AetherMart-Link");
-        t.setDaemon(true);
-        return t;
-    });
-    private final Map<UUID, String> linked = new ConcurrentHashMap<>();
     private final Set<UUID> bypass = ConcurrentHashMap.newKeySet();
-    private final Set<UUID> known = ConcurrentHashMap.newKeySet();
-    /** 立即重查的冷卻（每人 3 秒一次），避免狂點造成大量查詢。 */
-    private final Map<UUID, Long> lastRefresh = new ConcurrentHashMap<>();
-    private final Set<UUID> deferred = ConcurrentHashMap.newKeySet();
-    private volatile boolean ok;
-    private volatile boolean warned;
-    private Connection conn;
-    private File dbFile;
 
     public LinkReader(AetherMart plugin) {
         this.plugin = plugin;
     }
 
     public boolean available() {
-        Plugin p = Bukkit.getPluginManager().getPlugin("DiscordLink");
-        return p != null && p.isEnabled() && ok;
+        return DiscordLinkAPI.isAvailable();
     }
 
     /** 主執行緒：能否交易（依 config 的 require-link）。 */
@@ -69,243 +36,57 @@ public final class LinkReader {
             return false;
         }
         UUID id = p.getUniqueId();
-        return linked.containsKey(id) || (plugin.config().allowBypass && bypass.contains(id));
+        return isLinked(id) || (plugin.config().allowBypass && bypass.contains(id));
     }
 
     public boolean isLinked(UUID id) {
-        return linked.containsKey(id);
+        return DiscordLinkAPI.isAvailable() && DiscordLinkAPI.isLinked(plugin, id);
     }
 
     public boolean known(UUID id) {
-        return known.contains(id);
+        return isLinked(id);
     }
 
     public void start() {
-        long period = plugin.config().linkRefreshSeconds * 20L;
-        Bukkit.getScheduler().runTaskTimer(plugin, this::refreshOnline, 40L, period);
+        // 由 DiscordLinkAPI 即時查詢記憶體，不再需要背景定期讀取硬碟
     }
 
     public void onJoin(UUID id) {
-        thread.execute(() -> query(List.of(id)));
+        // 即時查詢，無需背景排隊
     }
 
-    /** 立即在背景重查一位玩家（例如剛綁定、被擋下時）；每人 3 秒最多一次，冷卻中的要求延後到冷卻結束再查（只排一次）。 */
     public void refresh(UUID id) {
-        refresh(id, 3000);
+        // 即時查詢，無需背景排隊
     }
 
     public void refresh(UUID id, long gapMs) {
-        long now = System.currentTimeMillis();
-        Long last = lastRefresh.get(id);
-        if (last != null && now - last < gapMs) {
-            if (deferred.add(id)) {
-                long wait = gapMs - (now - last);
-                Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                    deferred.remove(id);
-                    if (Bukkit.getPlayer(id) != null) {
-                        refresh(id, gapMs);
-                    }
-                }, Math.max(1L, wait / 50L + 1));
-            }
-            return;
-        }
-        lastRefresh.put(id, now);
-        thread.execute(() -> query(List.of(id)));
+        // 即時查詢，無需背景排隊
     }
 
-    /** 每秒由介面計時器呼叫：開著 AetherMart 介面、需要綁定卻還沒綁的玩家，每 5 秒重查一次。 */
     public void watchUnlinked(Player p) {
-        if (!(plugin.config().requireLinkBuy || plugin.config().requireLinkSell) || linked.containsKey(p.getUniqueId())) {
-            return;
-        }
-        Long last = lastRefresh.get(p.getUniqueId());
-        if (last == null || System.currentTimeMillis() - last >= 5000) {
-            refresh(p.getUniqueId(), 5000);
-        }
+        // 即時查詢
     }
 
     public void onQuit(UUID id) {
-        lastRefresh.remove(id);
-        deferred.remove(id);
-        linked.remove(id);
         bypass.remove(id);
-        known.remove(id);
     }
 
-    private void refreshOnline() {
-        List<UUID> ids = new ArrayList<>();
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            ids.add(p.getUniqueId());
-        }
-        thread.execute(() -> query(ids));
-    }
-
-    /** 背景：更新一批玩家的綁定狀態。 */
-    private void query(List<UUID> ids) {
-        if (!openIfNeeded()) {
-            return;
-        }
-        try {
-            List<UUID> nowLinked = new ArrayList<>();
-            for (UUID id : ids) {
-                String dc = discordIdUnsafe(id);
-                if (dc != null) {
-                    if (linked.put(id, dc) == null && known.contains(id)) {
-                        nowLinked.add(id);
-                    }
-                } else {
-                    linked.remove(id);
-                }
-                if (isBypassUnsafe(id)) {
-                    bypass.add(id);
-                } else {
-                    bypass.remove(id);
-                }
-                known.add(id);
-            }
-            ok = true;
-            if (!nowLinked.isEmpty()) {
-                Bukkit.getScheduler().runTask(plugin, () -> linkedNow(nowLinked));
-            }
-        } catch (SQLException e) {
-            fail(e);
-        }
-    }
-
-    /** 任何執行緒：查詢玩家綁定的 Discord ID（會在 Link 執行緒等待結果）。 */
     public Optional<String> discordId(UUID id) {
-        String cached = linked.get(id);
-        if (cached != null) {
-            return Optional.of(cached);
-        }
-        try {
-            return thread.submit(() -> {
-                if (!openIfNeeded()) {
-                    return Optional.<String>empty();
-                }
-                try {
-                    return Optional.ofNullable(discordIdUnsafe(id));
-                } catch (SQLException e) {
-                    fail(e);
-                    return Optional.<String>empty();
-                }
-            }).get(15, TimeUnit.SECONDS);
-        } catch (Exception e) {
+        if (!DiscordLinkAPI.isAvailable()) {
             return Optional.empty();
         }
+        return DiscordLinkAPI.getDiscordId(plugin, id);
     }
 
-    /** 主執行緒：剛確認綁定的玩家收到提示，開著的介面重畫（送出按鈕變綠）。 */
-    private void linkedNow(List<UUID> ids) {
-        if (!plugin.isEnabled()) {
-            return;
-        }
-        for (UUID id : ids) {
-            Player p = Bukkit.getPlayer(id);
-            if (p == null) {
-                continue;
-            }
-            if (plugin.config().requireLinkBuy || plugin.config().requireLinkSell) {
-                plugin.messages().send(p, "link.confirmed");
-            }
-            if (p.getOpenInventory().getTopInventory().getHolder(false) instanceof clre20.aetherMart.gui.Menu m && !m.isSuspended()) {
-                m.refresh();
-            }
-        }
+    public Optional<String> get(UUID id) {
+        return discordId(id);
     }
 
-    private String discordIdUnsafe(UUID id) throws SQLException {
-        try (PreparedStatement ps = conn.prepareStatement("SELECT dc_id FROM bindings WHERE uuid=?")) {
-            ps.setString(1, id.toString());
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    String dc = rs.getString(1);
-                    return dc != null && dc.matches("\\d{5,25}") ? dc : null;
-                }
-            }
-        }
-        return null;
-    }
-
-    private boolean isBypassUnsafe(UUID id) throws SQLException {
-        try (PreparedStatement ps = conn.prepareStatement("SELECT 1 FROM bypass_list WHERE uuid=?")) {
-            ps.setString(1, id.toString());
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-        }
-    }
-
-    private boolean openIfNeeded() {
-        try {
-            Plugin dl = Bukkit.getPluginManager().getPlugin("DiscordLink");
-            if (dl == null || !dl.isEnabled()) {
-                closeConn();
-                ok = false;
-                return false;
-            }
-            File folder = dl.getDataFolder();
-            File file = resolveDb(folder);
-            if (conn != null && !conn.isClosed() && file.equals(dbFile)) {
-                return true;
-            }
-            closeConn();
-            if (!file.isFile()) {
-                throw new SQLException("DiscordLink database not found");
-            }
-            Properties props = new Properties();
-            props.setProperty("open_mode", "1");
-            conn = DriverManager.getConnection("jdbc:sqlite:" + file.getAbsolutePath(), props);
-            conn.setReadOnly(true);
-            try (var st = conn.createStatement()) {
-                st.execute("PRAGMA busy_timeout=3000");
-            }
-            dbFile = file;
-            return true;
-        } catch (SQLException e) {
-            fail(e);
-            return false;
-        }
-    }
-
-    private static File resolveDb(File folder) {
-        String name = "database.db";
-        File cfg = new File(folder, "config.yml");
-        if (cfg.isFile()) {
-            String n = YamlConfiguration.loadConfiguration(cfg).getString("database.sqlite-file-name", "database.db");
-            if (n != null && DB_NAME.matcher(n).matches() && !n.contains("..")) {
-                name = n;
-            }
-        }
-        return new File(folder, name);
-    }
-
-    private void fail(Exception e) {
-        ok = false;
-        closeConn();
-        if (!warned) {
-            warned = true;
-            plugin.getLogger().warning("Cannot read DiscordLink bindings (link checks will deny, personal notices paused): " + e.getMessage());
-        }
-    }
-
-    private void closeConn() {
-        if (conn != null) {
-            try {
-                conn.close();
-            } catch (SQLException ignored) {
-            }
-            conn = null;
-        }
+    public void close() {
+        // 無硬碟連線需關閉
     }
 
     public void shutdown() {
-        thread.execute(this::closeConn);
-        thread.shutdown();
-        try {
-            thread.awaitTermination(5, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        // 無執行緒需關閉
     }
 }

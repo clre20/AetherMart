@@ -74,19 +74,9 @@
                                 </transformer>
                             </transformers>
                             <relocations>
-                                <relocation><pattern>net.dv8tion</pattern><shadedPattern>${shade.base}.jda</shadedPattern></relocation>
-                                <relocation><pattern>okhttp3</pattern><shadedPattern>${shade.base}.okhttp3</shadedPattern></relocation>
-                                <relocation><pattern>okio</pattern><shadedPattern>${shade.base}.okio</shadedPattern></relocation>
-                                <relocation><pattern>kotlin</pattern><shadedPattern>${shade.base}.kotlin</shadedPattern></relocation>
-                                <relocation><pattern>com.fasterxml</pattern><shadedPattern>${shade.base}.fasterxml</shadedPattern></relocation>
-                                <relocation><pattern>com.neovisionaries</pattern><shadedPattern>${shade.base}.neovisionaries</shadedPattern></relocation>
-                                <relocation><pattern>gnu.trove</pattern><shadedPattern>${shade.base}.trove</shadedPattern></relocation>
-                                <relocation><pattern>org.apache.commons.collections4</pattern><shadedPattern>${shade.base}.collections4</shadedPattern></relocation>
                                 <relocation><pattern>org.apache.pdfbox</pattern><shadedPattern>${shade.base}.pdfbox</shadedPattern></relocation>
                                 <relocation><pattern>org.apache.fontbox</pattern><shadedPattern>${shade.base}.fontbox</shadedPattern></relocation>
                                 <relocation><pattern>org.apache.commons.logging</pattern><shadedPattern>${shade.base}.logging</shadedPattern></relocation>
-                                <relocation><pattern>org.jetbrains.annotations</pattern><shadedPattern>${shade.base}.annotations</shadedPattern></relocation>
-                                <relocation><pattern>org.intellij.lang.annotations</pattern><shadedPattern>${shade.base}.intellij</shadedPattern></relocation>
                             </relocations>
                         </configuration>
                     </execution>
@@ -126,7 +116,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.21-R0.1-SNAPSHOT</version>
+            <version>26.3.build.249-stable</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -142,23 +132,16 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>net.dv8tion</groupId>
-            <artifactId>JDA</artifactId>
-            <version>${jda.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>club.minnced</groupId>
-                    <artifactId>opus-java</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.crypto.tink</groupId>
-                    <artifactId>tink</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>clre20</groupId>
+            <artifactId>DiscordLink</artifactId>
+            <version>1.9.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>clre20</groupId>
+            <artifactId>HttpHub</artifactId>
+            <version>1.0.1</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.pdfbox</groupId>

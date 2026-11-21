@@ -1,88 +1,45 @@
 package clre20.aetherMart.discord;
 
+import clre20.discordLink.api.DiscordLinkAPI;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.requests.GatewayIntent;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-/** AetherMart 自己的 Discord 機器人（用戶在 config 填 Token）。連線在背景執行緒，不卡伺服器啟動。 */
+/**
+ * AetherMart Discord 機器人通道：
+ * 全面改由共用 DiscordLink 對外開放的 Bot API，不再自行打包 JDA 或開啟背景連線線程。
+ */
 public final class DiscordBot {
 
     private final Logger logger;
-    private final ExecutorService lifecycle = Executors.newSingleThreadExecutor(r -> {
-        Thread t = new Thread(r, "AetherMart-DiscordLogin");
-        t.setDaemon(true);
-        return t;
-    });
-    private volatile JDA jda;
-    private volatile String token = "";
 
     public DiscordBot(Logger logger) {
         this.logger = logger;
     }
 
     public boolean ready() {
-        JDA j = jda;
-        return j != null && j.getStatus() == JDA.Status.CONNECTED;
+        return DiscordLinkAPI.isAvailable() && DiscordLinkAPI.isBotReady();
     }
 
     public JDA jda() {
-        return jda;
+        if (!DiscordLinkAPI.isAvailable()) {
+            return null;
+        }
+        Plugin p = Bukkit.getPluginManager().getPlugin("AetherMart");
+        return DiscordLinkAPI.getJda(p);
     }
 
     public boolean configured() {
-        return !token.isEmpty();
+        return DiscordLinkAPI.isAvailable();
     }
 
-    /** 啟動或在 Token 改變時重新連線。 */
     public void apply(String newToken) {
-        String t = newToken == null ? "" : newToken.trim();
-        if (t.equals(token) && (jda != null || t.isEmpty())) {
-            return;
-        }
-        token = t;
-        lifecycle.execute(() -> {
-            stop();
-            if (t.isEmpty()) {
-                return;
-            }
-            try {
-                JDA j = JDABuilder.createLight(t, java.util.EnumSet.noneOf(GatewayIntent.class))
-                        .setEnableShutdownHook(false)
-                        .setAutoReconnect(true)
-                        .build();
-                j.awaitReady();
-                jda = j;
-                logger.info("Discord bot connected as " + j.getSelfUser().getName());
-            } catch (Exception e) {
-                logger.warning("Discord bot could not connect (notifications paused, shop still works): " + e.getMessage());
-            }
-        });
-    }
-
-    private void stop() {
-        JDA j = jda;
-        jda = null;
-        if (j == null) {
-            return;
-        }
-        j.shutdown();
-        try {
-            if (!j.awaitShutdown(5, TimeUnit.SECONDS)) {
-                j.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            j.shutdownNow();
-            Thread.currentThread().interrupt();
-        }
+        // 不需要個別 Token，由 DiscordLink 統一管理
     }
 
     public void shutdown() {
-        lifecycle.shutdownNow();
-        stop();
+        // 無常駐背景連線線程，由 DiscordLink 統籌生命週期
     }
 }

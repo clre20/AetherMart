@@ -4,6 +4,7 @@ import clre20.aetherMart.AetherMart;
 import clre20.aetherMart.pdf.Receipt;
 import clre20.aetherMart.util.TimeUtil;
 import clre20.aetherMart.util.Vars;
+import clre20.discordLink.api.DiscordLinkAPI;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -410,13 +411,14 @@ public final class Notifier {
                     "values.peak", Integer.MAX_VALUE);
             fileName = "AetherMart-" + number + ".pdf";
         }
-        User user = jda.retrieveUserById(dc.get()).complete();
-        var ch = user.openPrivateChannel().complete();
-        var action = ch.sendMessageEmbeds(embed);
+        List<FileUpload> files = new ArrayList<>();
         if (pdf != null && pdf.length <= MAX_FILE) {
-            action = action.addFiles(FileUpload.fromData(pdf, fileName));
+            files.add(FileUpload.fromData(pdf, fileName));
         }
-        action.complete();
+        boolean ok = DiscordLinkAPI.sendDirectMessage(plugin, player, null, embed, files).get(15, TimeUnit.SECONDS);
+        if (!ok) {
+            throw new IllegalStateException("DiscordLink sendDirectMessage failed");
+        }
         group.clear();
         group.addAll(keep);
         return true;
@@ -523,11 +525,9 @@ public final class Notifier {
         if (jda == null) {
             throw new IllegalStateException("bot not connected");
         }
-        User user = jda.retrieveUserById(dc.get()).complete();
-        var ch = user.openPrivateChannel().complete();
-        ch.sendMessageEmbeds(embed).addFiles(files.get(0)).complete();
-        for (int i = 1; i < files.size(); i++) {
-            ch.sendFiles(files.get(i)).complete();
+        boolean ok = DiscordLinkAPI.sendDirectMessage(plugin, player, null, embed, files).get(15, TimeUnit.SECONDS);
+        if (!ok) {
+            throw new IllegalStateException("DiscordLink sendDirectMessage (receipts) failed");
         }
         plugin.activity().log("DISCORD", "sent daily receipts to " + n.playerName + " (" + receipts.size() + " receipt(s), "
                 + pdf.length / 1024 + " KB)");
@@ -547,11 +547,10 @@ public final class Notifier {
     }
 
     private boolean sendAdmin(List<Notice> group) {
-        JDA jda = plugin.bot().jda();
-        GuildMessageChannel ch = jda == null ? null : adminChannel(jda);
-        if (ch == null) {
+        String adminChId = plugin.config().adminChannel;
+        if (!adminChId.matches("\\d{5,25}")) {
             for (Notice n : new ArrayList<>(group)) {
-                drop(n, "admin channel not found");
+                drop(n, "admin channel invalid");
             }
             return false;
         }
@@ -566,15 +565,24 @@ public final class Notifier {
             }
             embed = embed("discord.admin.combined", Vars.of("count", group.size(), "lines", lines.toString().trim()), plugin.pdf().theme());
         }
-        ch.sendMessageEmbeds(embed).complete();
-        return true;
+        try {
+            boolean ok = DiscordLinkAPI.sendChannelMessage(plugin, adminChId, null, embed, null).get(15, TimeUnit.SECONDS);
+            if (!ok) {
+                for (Notice n : new ArrayList<>(group)) {
+                    drop(n, "admin channel send failed");
+                }
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private boolean sendDaily(Notice n) throws Exception {
-        JDA jda = plugin.bot().jda();
-        GuildMessageChannel ch = jda == null ? null : adminChannel(jda);
-        if (ch == null) {
-            drop(n, "admin channel not found");
+        String adminChId = plugin.config().adminChannel;
+        if (!adminChId.matches("\\d{5,25}")) {
+            drop(n, "admin channel invalid");
             return false;
         }
         MessageEmbed embed = embed(n.key, n.vars, plugin.pdf().theme());
@@ -590,13 +598,10 @@ public final class Notifier {
                 }
             }
         }
-        if (files.isEmpty()) {
-            ch.sendMessageEmbeds(embed).complete();
-        } else {
-            ch.sendMessageEmbeds(embed).addFiles(files.get(0)).complete();
-            for (int i = 1; i < files.size(); i++) {
-                ch.sendFiles(files.get(i)).complete();
-            }
+        boolean ok = DiscordLinkAPI.sendChannelMessage(plugin, adminChId, null, embed, files).get(15, TimeUnit.SECONDS);
+        if (!ok) {
+            drop(n, "admin channel send daily failed");
+            return false;
         }
         return true;
     }

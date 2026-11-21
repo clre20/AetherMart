@@ -1,6 +1,6 @@
 # AetherMart
 
-AetherMart 是一個 Paper 伺服器用的綜合商店插件：系統商店與玩家拍賣場放在同一套箱子介面裡，支援 Vault 預設幣，以及 VaultBank 或 ExcellentEconomy 的特殊幣，並內建 Discord 機器人，把每一筆交易做成 PDF 明細私訊給玩家、每日彙整送到管理員頻道。
+AetherMart 是一個 Paper 伺服器用的綜合商店插件：系統商店與玩家拍賣場放在同一套箱子介面裡，支援 Vault 預設幣，以及 VaultBank 或 ExcellentEconomy 的特殊幣，並透過 [DiscordLink](https://github.com/clre20/Discord-link-Minecraft-Plugin) 共用機器人服務，把每一筆交易做成 PDF 明細私訊給玩家、每日彙整送到管理員頻道（不需重複連線與開啟 JDA 線程）。
 
 玩家只需要記住 `/mart`，其他所有操作都在介面裡完成；基岩版玩家（Geyser）一樣使用箱子介面。
 
@@ -21,12 +21,13 @@ AetherMart 是一個 Paper 伺服器用的綜合商店插件：系統商店與�
   - **領取箱**：買到、得標、退回的物品一律進領取箱，不會掉在地上；收入與退款直接存入對應貨幣帳戶，只有入帳失敗才放進領取箱。
   - **禁止販售**：管理員在介面中點物品加入，比對完整 NBT，連潛影盒、束口袋裡的物品也會檢查。
   - **休市與強制下架**：休市期間不能上架、購買或出價；強制下架時物品退回賣家，出價者都不會被扣款。
-- **Discord 通知（內建機器人，填入 Token 即可）**
+- **Discord 通知（透過 DiscordLink 共用機器人）**
   - **個人私訊 PDF**：購買、得標、賣出、上架、下架、流標、被超過、違約都會產生一份 PDF 明細；玩家可在個人設定頁逐項開關（違約通知無法關閉）。
   - **每日收據**：系統商店購買、拍賣購買、得標、賣出不再一筆一則，改在每日結算時間每人寄一則，附當天所有收據合併的 PDF；結算時一位一位產生、間隔寄出，不會在結算時間一次處理完（可在 `discord.personal.daily-receipts` 關閉，改回即時）。
   - **管理員頻道**：每筆交易即時卡片（可關閉）＋每日結算時間送出每日彙整 PDF。
   - **尖峰合併與限速**：通知排隊慢慢送，佇列過長時同一人的通知合併成一則，避免卡住或被 Discord 限流。
-  - **綁定檢查**：讀取 [DiscordLink](https://github.com/clre20/Discord-link-Minecraft-Plugin) 的綁定資料（唯讀），可設定未綁定時不能購買或上架。
+  - **共用機器人與綁定查詢**：全面介接 [DiscordLinkAPI](https://github.com/clre20/Discord-link-Minecraft-Plugin)，直接使用伺服器現有的 Discord 機器人連線發送私訊（含 PDF 附件）、頻道訊息與即時查詢綁定，大幅瘦身 12MB+ 並節省 15 條背景執行緒。
+  - **綁定檢查**：可設定未綁定 Discord 時不能購買或上架。
 - **PDF 明細**
   - 繁中、簡中、英文都能正確顯示（內建 Noto Sans TC／SC 字型）。
   - 有自訂名稱的物品顯示該名稱，其他物品顯示原版翻譯，並列出附魔與耐久。
@@ -38,7 +39,7 @@ AetherMart 是一個 Paper 伺服器用的綜合商店插件：系統商店與�
 - **多語言**：`config.yml` 的 `language` 可選 `zh_tw`、`zh_cn`、`en_us`；換語言後重載，舊的 `messages.yml`、`pdf.yml` 會自動備份並以新語言重建。
 - **設定檔自動補齊**：啟動與重載時自動補上缺少的項目，保留你原本的值與註解；改版時，你沒改過的訊息會自動換成新版文字。
 - **介面簽署**：所有介面都使用自訂 `InventoryHolder`（`getPlugin()`、`getMenuId()`）並在物品寫入 PDC `aethermart:gui`，方便其他插件（例如 Item-lock）辨識。
-- **檢查更新**：啟動時非同步檢查 GitHub Releases，結果快取 10 分鐘，有權限的管理員登入 3 秒後收到提醒。
+- **集中版本檢查**：若有安裝 [HttpHub](https://github.com/clre20/HttpHub)，自動向 HttpHub 登記集中更新檢查，由單例虛擬執行緒統一處理並記錄稽核日誌；未安裝時自動降級為獨立檢查。
 
 ## 指令與權限
 
@@ -66,6 +67,9 @@ AetherMart 是一個 Paper 伺服器用的綜合商店插件：系統商店與�
 # 需求：Paper 1.21.x ～ 26.x、Java 21+、Vault 與一個經濟插件（缺少時後台會說明缺什麼）
 # 選用：VaultBank 或 ExcellentEconomy（特殊幣）、DiscordLink（Discord 綁定）
 plugins/
+
+> **Update Checker**: When [HttpHub](https://github.com/clre20/HttpHub) is installed, update checks and operator login alerts are handled centrally by HttpHub via virtual threads, preventing redundant background connections.
+
 ├── AetherMart-1.4.0.jar
 ├── Vault.jar
 └── VaultBank.jar
@@ -95,17 +99,18 @@ currencies:
 # 新增分類 → 商品列表 → 點自己背包的物品 → 設定價格、幣別、上限 → 儲存
 ```
 
-### 4. 啟用 Discord 通知
+### 4. 啟用 Discord 通知（透過 DiscordLink）
 
 ```yaml
 # config.yml
 discord:
-  token: "你的機器人 Token"
+  enabled: true
   admin:
     channel-id: "123456789012345678"
     daily-summary:
       time: "00:00"
 ```
+> 註：Discord 機器人 Token 與連線由 DiscordLink 統一管理，AetherMart 透過 DiscordLinkAPI 自動共用連線，無須重複填寫 Token。
 
 ### 5. 玩家建立拍賣
 
@@ -142,7 +147,7 @@ AetherMart 以 [GNU General Public License v3.0](LICENSE) 發布。
 
 # AetherMart (English)
 
-AetherMart is an all-in-one shop plugin for Paper servers. A system shop and a player auction house share one chest UI, with Vault, VaultBank and ExcellentEconomy currencies, and a built-in Discord bot that sends players a PDF receipt for every trade and posts a daily summary to an admin channel.
+AetherMart is an all-in-one shop plugin for Paper servers. A system shop and a player auction house share one chest UI, with Vault, VaultBank and ExcellentEconomy currencies, and integrates with the [DiscordLink](https://github.com/clre20/Discord-link-Minecraft-Plugin) shared bot service via DiscordLinkAPI to deliver PDF trade receipts directly to players and daily summaries to an admin channel (no duplicate JDA bot instance or extra threads needed).
 
 Players only need `/mart`; everything else happens in the menus. Bedrock players (Geyser) use the same chest UI.
 

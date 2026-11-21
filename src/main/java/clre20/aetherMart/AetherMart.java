@@ -162,19 +162,31 @@ public final class AetherMart extends JavaPlugin {
             PlayerListener.loadPlayer(this, p, false);
         }
 
-        updates = new UpdateChecker(getPluginMeta().getVersion());
-        if (config.updateOnStartup) {
-            updates.check().thenAccept(r -> {
-                switch (r.state()) {
-                    case OUTDATED -> getLogger().warning(messages.plain("update.console-outdated", clre20.aetherMart.util.Vars.of(
-                            "current", r.current(), "latest", r.latest(), "url", r.url())));
-                    case DEVELOPMENT -> getLogger().info(messages.plain("update.console-development", clre20.aetherMart.util.Vars.of(
-                            "current", r.current(), "latest", r.latest())));
-                    case LATEST -> getLogger().info(messages.plain("update.console-latest", clre20.aetherMart.util.Vars.of("current", r.current())));
-                    case NO_RELEASE -> getLogger().info(messages.plain("update.console-no-release", java.util.Map.of()));
-                    case FAILED -> getLogger().warning(messages.plain("update.console-failed", clre20.aetherMart.util.Vars.of("error", r.error())));
-                }
-            });
+        if (clre20.httpHub.api.HttpHubAPI.isAvailable()) {
+            clre20.httpHub.api.HttpHubAPI.registerUpdateCheck(this, "clre20/AetherMart", getPluginMeta().getVersion(), "aethermart.version",
+                    info -> {
+                        if (info.hasUpdate()) {
+                            getLogger().warning(messages.plain("update.console-outdated", clre20.aetherMart.util.Vars.of(
+                                    "current", info.currentVersion(), "latest", info.latestVersion(), "url", "https://github.com/clre20/AetherMart/releases")));
+                        } else {
+                            getLogger().info("AetherMart 版本檢查: " + info.reason());
+                        }
+                    });
+        } else {
+            updates = new UpdateChecker(getPluginMeta().getVersion());
+            if (config.updateOnStartup) {
+                updates.check().thenAccept(r -> {
+                    switch (r.state()) {
+                        case OUTDATED -> getLogger().warning(messages.plain("update.console-outdated", clre20.aetherMart.util.Vars.of(
+                                "current", r.current(), "latest", r.latest(), "url", r.url())));
+                        case DEVELOPMENT -> getLogger().info(messages.plain("update.console-development", clre20.aetherMart.util.Vars.of(
+                                "current", r.current(), "latest", r.latest())));
+                        case LATEST -> getLogger().info(messages.plain("update.console-latest", clre20.aetherMart.util.Vars.of("current", r.current())));
+                        case NO_RELEASE -> getLogger().info(messages.plain("update.console-no-release", java.util.Map.of()));
+                        case FAILED -> getLogger().warning(messages.plain("update.console-failed", clre20.aetherMart.util.Vars.of("error", r.error())));
+                    }
+                });
+            }
         }
         ready = true;
         activity.log("SYSTEM", "AetherMart " + getPluginMeta().getVersion() + " enabled");
@@ -250,7 +262,9 @@ public final class AetherMart extends JavaPlugin {
         notifier.shutdown();
         bot.shutdown();
         links.shutdown();
-        updates.shutdown();
+        if (updates != null) {
+            updates.shutdown();
+        }
         worker.shutdown();
         try {
             worker.awaitTermination(20, TimeUnit.SECONDS);
