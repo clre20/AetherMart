@@ -70,7 +70,7 @@ plugins/
 
 > **Update Checker**: When [HttpHub](https://github.com/clre20/HttpHub) is installed, update checks and operator login alerts are handled centrally by HttpHub via virtual threads, preventing redundant background connections.
 
-├── AetherMart-1.4.0.jar
+├── AetherMart-1.4.2.jar
 ├── Vault.jar
 └── VaultBank.jar
 ```
@@ -213,7 +213,7 @@ Players only need `/mart`; everything else happens in the menus. Bedrock players
 # Requires Paper 1.21.x to 26.x, Java 21+, Vault and an economy plugin
 # Optional: VaultBank or ExcellentEconomy (special currency), DiscordLink (Discord links)
 plugins/
-├── AetherMart-1.4.0.jar
+├── AetherMart-1.4.2.jar
 ├── Vault.jar
 └── VaultBank.jar
 ```

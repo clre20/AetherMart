@@ -49,11 +49,11 @@ public final class PlayerListener implements Listener {
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
         loadPlayer(plugin, p, true);
-        if (plugin.config().updateNotifyJoin && p.hasPermission("aethermart.version")) {
+        if (plugin.config().updateNotifyJoin && p.hasPermission("aethermart.version") && plugin.updates() != null) {
             UUID id = p.getUniqueId();
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 Player pl = Bukkit.getPlayer(id);
-                if (pl == null) {
+                if (pl == null || plugin.updates() == null) {
                     return;
                 }
                 plugin.updates().check().thenAccept(r -> Bukkit.getScheduler().runTask(plugin, () -> {
